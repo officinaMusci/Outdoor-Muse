@@ -1,0 +1,9 @@
+.env
+
+*.db
+
+Pipfile
+*.lock
+
+__pycache__/
+*.pyc
