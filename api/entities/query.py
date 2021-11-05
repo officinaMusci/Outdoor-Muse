@@ -31,13 +31,14 @@ class QueryRow( database.Base ):
     max_walk = ORMColumn(ORMInterval)
     weather_ids = ORMColumn(ORMPickleType)
     max_results = ORMColumn(ORMInteger)
+    language = ORMColumn(ORMString)
 
 
 @dataclass
 class Query:
     '''Query dataclass.
 
-    It represents a search query containing all the API search criteria.
+    It represents a search query containing all the search criteria.
     
     Attributes:
         location: The start location.
@@ -48,6 +49,7 @@ class Query:
         max_walk: The maximum walk time.
         weather_ids: The forecasts accepted for the query.
         max_results: The maximum amount of results to get.
+        language: The language to use in results.
     '''
     location:Location
     interval:Interval
@@ -56,7 +58,8 @@ class Query:
     max_travel:timedelta
     max_walk:timedelta
     weather_ids:List[int]
-    max_results:int
+    max_results:int=5
+    language:str=None
 
     @classmethod
     def from_dict(cls, dictionary:dict):
@@ -75,7 +78,10 @@ class Query:
             max_travel=time.str_to_delta(dictionary['max_travel']),
             max_walk=time.str_to_delta(dictionary['max_walk']),
             weather_ids=dictionary['weather_ids'],
-            max_results=dictionary['max_results'],
+            max_results=dictionary['max_results']
+                if 'max_results' in dictionary else cls.max_results,
+            language=dictionary['language']
+                if 'language' in dictionary else cls.language
         )
 
     @classmethod
@@ -95,7 +101,8 @@ class Query:
             max_travel=row.max_travel,
             max_walk=row.max_walk,
             weather_ids=row.weather_ids,
-            max_results=row.max_results
+            max_results=row.max_results,
+            language=row.language
         )
     
     @classmethod
@@ -120,7 +127,8 @@ class Query:
             max_travel=self.max_travel,
             max_walk=self.max_walk,
             weather_ids=self.weather_ids,
-            max_results=self.max_results
+            max_results=self.max_results,
+            language=self.language
         )
     
     def store_row(self) -> int:

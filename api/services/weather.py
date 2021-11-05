@@ -14,9 +14,14 @@ from entities.forecast import Forecast
 
 load_dotenv()
 api_key=os.getenv('OPENWEATHER_KEY')
+language = os.getenv('LANGUAGE')
 
 
-def get_daily_forecasts(location:Location, interval:Interval=None) -> List[Forecast]:
+def get_daily_forecasts(
+    location:Location,
+    interval:Interval=None,
+    language:str=language
+) -> List[Forecast]:
     '''Gets up to 7 daily forecasts for a given location.
 
     All conditions available: https://openweathermap.org/weather-conditions
@@ -37,6 +42,7 @@ def get_daily_forecasts(location:Location, interval:Interval=None) -> List[Forec
         'lat': location.lat,
         'lon': location.lng,
         'appid': api_key,
+        'lang': language,
         'units': 'metric',
         'exclude': ','.join(['current', 'minutely', 'hourly', 'alerts'])
     }

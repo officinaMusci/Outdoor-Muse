@@ -12,12 +12,14 @@ from entities.location import Location
 
 load_dotenv()
 gmaps = googlemaps.Client(key=os.getenv('GOOGLE_KEY'))
+language = os.getenv('LANGUAGE')
 
 
 def fetch_places_nearby(
     location:Location,
     radius:int,
-    place_type:str
+    place_type:str,
+    language:str=language
 ) -> List[Place]:
     '''Uses web wrapping and Google Places API to make a Nearby Search.
     
@@ -34,7 +36,8 @@ def fetch_places_nearby(
     response = gmaps.places_nearby(
         location=(location.lat, location.lng),
         radius=radius,
-        type=place_type
+        type=place_type,
+        language=language
     )
 
     if response and 'results' in response:
@@ -51,7 +54,8 @@ def fetch_itinerary(
     end_location:Location,
     mode:str='transit',
     departure_time:datetime=None,
-    arrival_time:datetime=None
+    arrival_time:datetime=None,
+    language:str=language
 ) -> Itinerary:
     '''Uses Google Directions API to make an itinerary search.
     
@@ -73,6 +77,7 @@ def fetch_itinerary(
         mode=mode or 'transit',
         departure_time=departure_time,
         arrival_time=arrival_time,
+        language=language,
         units='metric'
     )
 
