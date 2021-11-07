@@ -20,7 +20,7 @@ class QueryRow( database.Base ):
     '''ORM Query row representation'''
     __tablename__ = 'query'
 
-    id = ORMColumn(ORMInteger, primary_key=True)
+    id = ORMColumn(ORMInteger, primary_key=True, nullable=False)
     location_lat = ORMColumn(ORMFloat, nullable=False)
     location_lng = ORMColumn(ORMFloat, nullable=False)
     interval_start = ORMColumn(ORMDateTime)
@@ -86,7 +86,7 @@ class Query:
 
     @classmethod
     def from_row(cls, row:QueryRow):
-        '''Returns a Query object obtained from the QueryRow object'''
+        '''Returns a Query object obtained from a QueryRow object'''
         return Query(
             location=Location(
                 lat=row.location_lat,
@@ -107,16 +107,16 @@ class Query:
     
     @classmethod
     def from_row_id(cls, id:int):
-        '''Returns a Query object obtained from the QueryRow id'''
+        '''Returns a Query object obtained from a QueryRow id'''
         with database.create_session().begin() as db_session:
-            query_row = db_session.query(QueryRow).one()
+            query_row = db_session.query(QueryRow).get(id)
             query = Query.from_row(query_row)
             db_session.close()
         
         return query
 
     def to_row(self) -> QueryRow:
-        '''Returns a QueryRow object obtained from the Query object'''
+        '''Returns a QueryRow object obtained from a Query object'''
         return QueryRow(
             location_lat=self.location.lat,
             location_lng=self.location.lng,
