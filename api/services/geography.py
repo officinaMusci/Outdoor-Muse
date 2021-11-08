@@ -5,6 +5,7 @@ from typing import List
 from dotenv import load_dotenv
 import googlemaps
 
+from services import database
 from entities.place import Place
 from entities.itinerary import Itinerary
 from entities.location import Location
@@ -31,14 +32,42 @@ def fetch_places_nearby(
     RETURNS:
         places: A place list.
     '''
-    ww_list = [] # TODO: Get places from web wrapping
+    ww_list = []
+    sql_query = '''
+        SELECT *, (
+            3959 * acos(
+                cos(radians(:lat))
+                * cos(radians(location_lat))
+                * cos(radians(location_lng) - radians(:lng))
+                + sin(radians(:lat))
+                * sin(radians(location_lat))
+            )
+        ) AS distance
+        FROM place
+        WHERE distance < m_to_mi(:radius)
+        AND types LIKE '%'||:type||'%'
+        ORDER BY distance ASC;
+    '''
+    with database.create_session().begin() as db_session:
+        ww_list = [Place.from_row(x) for x in db_session.execute(
+            sql_query,
+            {
+                'lat': location.lat,
+                'lng': location.lng,
+                'radius': radius,
+                'type': place_type
+            }
+        )]
 
+    '''
     response = gmaps.places_nearby(
         location=(location.lat, location.lng),
         radius=radius,
         type=place_type,
         language=language
     )
+    '''
+    response = None
 
     if response and 'results' in response:
         return ww_list + [
