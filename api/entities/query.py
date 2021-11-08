@@ -139,6 +139,5 @@ class Query:
             db_session.add(query_row)
             db_session.flush()
             id = query_row.id
-            db_session.commit()
         
         return id

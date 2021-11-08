@@ -19,7 +19,7 @@ QUERY_DICT = {
         'end': datetime_end.strftime(datetime_format)
     },
     'radius': 100000,
-    'type': 'natural_feature',
+    'type': 'hike',
     'max_travel': '2:30:00',
     'max_walk': '0:30:00',
     'weather_ids': [

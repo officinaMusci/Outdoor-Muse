@@ -12,7 +12,7 @@ class TestDatabase(unittest.TestCase):
     '''Tests the database'''
 
     def delete_db(self):
-        ''''''
+        '''Delete test database file'''
         if os.path.exists(self.db_path):
             os.remove(self.db_path)
 
