@@ -1,5 +1,6 @@
 python-dotenv
 pytz
 Flask
+flask_cors
 sqlalchemy
 googlemaps

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 import flask
 from flask.json import JSONEncoder
+from flask_cors import CORS
 
 from utils import time
 
@@ -24,8 +25,10 @@ class CustomJSONEncoder(JSONEncoder):
             return list(iterable)
         return JSONEncoder.default(self, obj)
 
+
 app = flask.Flask(__name__)
 app.json_encoder = CustomJSONEncoder
+CORS(app)
 
 
 is_dev = os.getenv('FLASK_ENV') == 'development'
