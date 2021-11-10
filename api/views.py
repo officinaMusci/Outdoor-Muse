@@ -2,7 +2,7 @@ import os
 
 import flask
 
-from app import app, app_response, is_dev
+from app import app, app_response
 from factories.solution_factory import SolutionFactory
 from entities.query import Query
 
