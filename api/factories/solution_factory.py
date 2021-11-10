@@ -1,6 +1,5 @@
 from typing import List
 
-from utils import filters
 from services import geography, weather
 from entities.query import Query
 from entities.interval import Interval
@@ -96,12 +95,19 @@ class SolutionFactory:
         query = self.query
         solutions = self.solutions
         
-        self._solutions = filters.filter_solutions_by_trip_duration(
-            solutions=solutions,
-            max_travel=query.max_travel,
-            max_walk=query.max_walk
+        filtered_solutions = [
+            solution
+            for solution in solutions
+            if solution.walk_duration <= query.max_walk
+            and solution.travel_duration <= query.max_travel
+        ]
+        
+        filtered_solutions = sorted(
+            filtered_solutions,
+            key=lambda solution: solution.total_trip_duration
         )
 
+        self._solutions = filtered_solutions
         return self.solutions
     
     def _fetch_forecasts(self) -> List[Solution]:
@@ -122,11 +128,23 @@ class SolutionFactory:
         query = self.query
         solutions = self.solutions
         
-        self._solutions = filters.filter_solutions_by_weather(
-            solutions=solutions,
-            weather_ids=query.weather_ids
-        )
+        filtered_solutions = []
+        for solution in solutions:
+            solution_weather_ids = [
+                w['id']
+                for f in solution.forecasts
+                for w in f.weather
+            ]
 
+            has_good_weather = not len(list(
+                set(solution_weather_ids)
+                - set(query.weather_ids)
+            )) or not len(query.weather_ids)
+
+            if has_good_weather:
+                filtered_solutions.append(solution)
+
+        self._solutions = filtered_solutions
         return self.solutions
 
     def execute(self) -> List[Solution]:

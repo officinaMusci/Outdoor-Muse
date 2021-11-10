@@ -1,5 +1,4 @@
 import os
-import math
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, event
@@ -35,15 +34,6 @@ def create_session(engine=None):
         or os.getenv('DB_ENGINE')
         or f"sqlite:///{default_db_path}"
     )
-    
-    @event.listens_for(engine, 'connect')
-    def create_functions_on_connect(dbapi_connection, connection_record):
-        '''Add missing functions to SQLite'''
-        dbapi_connection.create_function('sin', 1, math.sin)
-        dbapi_connection.create_function('cos', 1, math.cos)
-        dbapi_connection.create_function('acos', 1, math.acos)
-        dbapi_connection.create_function('radians', 1, math.radians)
-        dbapi_connection.create_function('m_to_mi', 1, lambda m: int(m) * 0.000621371)
     
     Base.metadata.create_all(engine)
     Base.metadata.bind = engine

@@ -75,8 +75,12 @@ class Query:
             interval=Interval.from_dict(dictionary['interval']),
             radius=dictionary['radius'],
             place_type=dictionary['type'],
-            max_travel=time.str_to_delta(dictionary['max_travel']),
-            max_walk=time.str_to_delta(dictionary['max_walk']),
+            max_travel=time.str_to_delta(dictionary['max_travel'])
+                if isinstance(dictionary['max_travel'], str)
+                else dictionary['max_travel'],
+            max_walk=time.str_to_delta(dictionary['max_walk'])
+                if isinstance(dictionary['max_walk'], str)
+                else dictionary['max_walk'],
             weather_ids=dictionary['weather_ids'],
             max_results=dictionary['max_results']
                 if 'max_results' in dictionary else cls.max_results,
