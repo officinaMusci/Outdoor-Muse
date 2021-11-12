@@ -3,8 +3,7 @@ import os
 import flask
 
 from app import app, app_response
-from factories.solution_factory import SolutionFactory
-from entities.query import Query
+import crud
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -48,10 +47,7 @@ def execute_query():
     if not request_dict:
         flask.abort(400)
     
-    query = Query.from_dict(request_dict)
-    query.store_row()
-    solution_factory = SolutionFactory(query)
-    results = solution_factory.execute()
+    results = crud.execute_query(request_dict)
     
     return app_response(results)
 
