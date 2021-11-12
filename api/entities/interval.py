@@ -24,9 +24,9 @@ class Interval:
         It allows Flask to perform a correct json conversion based on this
         dataclass field.
         '''
-        self.duration = self.get_duration()
+        self.duration = self._get_duration()
 
-    def get_duration(self) -> timedelta:
+    def _get_duration(self) -> timedelta:
         '''Get the difference between start and end'''
         duration = self.end - self.start
         return timedelta(seconds=duration.total_seconds())

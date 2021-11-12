@@ -30,14 +30,12 @@ class SolutionFactory:
     def solutions(self) -> List[Solution]:
         return self._solutions
 
-    def _fetch_places(self) -> List[Place]:
-        '''Makes a place nearby search.
-    
-        ARGS:
-            query: The query to execute.
+    def _fetch_places(self):
+        '''Makes a Place search within the Query radius.
 
-        RETURNS:
-            places: A place list.
+        It searches the places of the chosen type inside the specified radius,
+        around the location defined. Each Place is added to the 'places' list
+        attribute to go on with the solution list production.
         '''
         query = self.query
         
@@ -46,18 +44,14 @@ class SolutionFactory:
             radius=query.radius,
             place_type=query.place_type
         )
-
-        return self.places
     
-    def _fetch_itineraries(self) -> List[Solution]:
-        '''Makes an itinerary search.
-    
-        ARGS:
-            query: The query to execute.
-            places: The places to reach.
+    def _fetch_itineraries(self):
+        '''Gets the outward itinerary and the return itinerary for each Place.
 
-        RETURNS:
-            solutions: A solution list.
+        For each Place found, it searches the outward itinerary and the return
+        itinerary. Then, it creates a Solution object and assign to it the Place
+        and the two itineraries. If the Solution free time is positive, then it
+        appends the Solution to the 'solutions' list attribute.
         '''
         query = self.query
         places = self.places
@@ -75,8 +69,8 @@ class SolutionFactory:
                 arrival_time=query.interval.end
             )
 
-            if outward_itinerary and return_itinerary:
-                self._solutions.append(Solution(
+            if (outward_itinerary and return_itinerary):
+                solution = Solution(
                     start_location=query.location,
                     destination=place,
                     interval=Interval(
@@ -86,12 +80,17 @@ class SolutionFactory:
                     outward_itinerary=outward_itinerary,
                     return_itinerary=return_itinerary,
                     forecasts=[]
-                ))
-            
-        return self.solutions
+                )
+
+                if solution.free_time.total_seconds() >= 0:
+                    self._solutions.append(solution)
     
-    def _filter_by_trip_duration(self) -> List[Solution]:
-        '''Filters and orders the solutions by trip duration'''
+    def _filter_by_trip_duration(self):
+        '''Filters and orders the solutions by trip duration.
+        
+        It keeps in the 'solutions' list attribute the solutions which respect
+        the maximum walk and maximum travel durations requested by the Query.
+        '''
         query = self.query
         solutions = self.solutions
         
@@ -108,10 +107,14 @@ class SolutionFactory:
         )
 
         self._solutions = filtered_solutions
-        return self.solutions
     
-    def _fetch_forecasts(self) -> List[Solution]:
-        '''Get forecasts for the solutions'''
+    def _fetch_forecasts(self):
+        '''Get forecasts for the solutions.
+        
+        It gets the weather conditions during the interval defined by the Query
+        for each Place found, then it updates the Solution with the Forecast
+        obtained.
+        '''
         solutions = []
         for solution in self.solutions:
             solution.forecasts = weather.get_daily_forecasts(
@@ -121,10 +124,13 @@ class SolutionFactory:
             solutions.append(solution)
 
         self._solutions = solutions
-        return self.solutions
     
-    def  _filter_by_forecasts(self) -> List[Solution]:
-        '''Filters and orders the solutions by forecasts'''
+    def  _filter_by_forecasts(self):
+        '''Filters and orders the solutions by forecasts.
+        
+        It keeps in the 'solutions' list attribute the solutions which respect
+        the weather conditions requested by the Query.
+        '''
         query = self.query
         solutions = self.solutions
         
@@ -145,10 +151,16 @@ class SolutionFactory:
                 filtered_solutions.append(solution)
 
         self._solutions = filtered_solutions
-        return self.solutions
 
     def execute(self) -> List[Solution]:
-        '''Executes the query and returns the solutions'''
+        '''Executes the query and returns the solutions.
+        
+        It runs the method sequence which generates the Solutions requested by
+        the Query, then it returns the populated 'solutions' list attribute.
+
+        RETURNS:
+            solutions: The list of solutions which match the search Query.
+        '''
         max_results = self.query.max_results
 
         self._fetch_places()

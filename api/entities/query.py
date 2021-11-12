@@ -58,7 +58,7 @@ class Query:
     max_travel:timedelta
     max_walk:timedelta
     weather_ids:List[int]
-    max_results:int=5
+    max_results:int=10
     language:str=None
 
     @classmethod
