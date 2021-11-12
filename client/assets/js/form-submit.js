@@ -1,7 +1,7 @@
 function objectifyForm(formArray) {
   //serialize data function
-  var returnArray = {};
-  for (var i = 0; i < formArray.length; i++){
+  let returnArray = {};
+  for (let i = 0; i < formArray.length; i++){
       returnArray[formArray[i]['name']] = formArray[i]['value'];
   }
   return returnArray;
@@ -16,7 +16,7 @@ function formatTimedelta(time) {
 }
 
 function createWeatherIds(data) {
-  var weatherIdGroups = {
+  let weatherIdGroups = {
     weatherClear: [800],
     weatherClouds: [801, 802, 803, 804],
     weatherOther: [300, 301, 302, 310, 311, 312, 313, 314, 321, 701, 711, 721, 731, 741, 751, 761, 762, 771, 781],
@@ -25,14 +25,14 @@ function createWeatherIds(data) {
     weatherThunderstorm: [200, 201, 202, 210, 211, 212, 221, 230, 231, 232]
   };
 
-  var filtered = Object.keys(data)
+  let filtered = Object.keys(data)
     .filter(key => key.startsWith('weather'))
     .reduce((obj, key) => {
       obj[key] = data[key];
       return obj;
     }, {});
   
-  var weatherIds = [];
+  let weatherIds = [];
   Object.keys(filtered).map(function(key, index) {
     weatherIds = weatherIds.concat(weatherIdGroups[key]);
   });
@@ -54,61 +54,117 @@ function getTime(datetime) {
 
 function getTimePercentage(duration, total) {
   function totalSeconds(time){
-    var parts = time.split(':');
+    let parts = time.split(':');
     return parts[0] * 3600 + parts[1] * 60 + parts[2];
   }
   return (100 * totalSeconds(duration) / totalSeconds(total)).toFixed(2);
 }
 
-function createResults(results) {
-  $('#solutions-container .badge').text(results.length)
-  $('#solutions > div:not(#toClone)').remove();
+function makeMap(container, data) {
+  let id = container.attr('id');
+  let map = L.map(id).setView([data.destination.location.lat, data.destination.location.lng], 7);
 
-  results.forEach(result => {
-    var clone = $('#toClone').clone();
+  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox/streets-v11',
+    tileSize: 512,
+    zoomOffset: -1,
+    accessToken: 'pk.eyJ1IjoiZGFuaWxvbXVzY2kiLCJhIjoiY2t2djdzcGhvMDgwbzJvcGhpeXdpMnprbyJ9.SuYbPwo5khMJgmfmRsp47g'
+  }).addTo(map);
 
-    var title = result.destination.name;
-    var outwardStart = new Date(result.outward_itinerary.interval.start);
-    var outwardWalkDuration = result.outward_itinerary.walk_duration;
-    var outwardTravelDuration = result.outward_itinerary.travel_duration;
-    var outwardEnd = new Date(result.outward_itinerary.interval.end);
-    var returnStart = new Date(result.return_itinerary.interval.start);
-    var returnWalkDuration = result.return_itinerary.walk_duration;
-    var returnTravelDuration = result.return_itinerary.travel_duration;
-    var returnEnd = new Date(result.return_itinerary.interval.end);
-    var totalTripDuration = result.info.total_trip_duration;
-    var freeTimeDuration = result.info.free_time;
-    var difficulty = result.destination.difficulty;
-    var weather = capitalizeFirstLetter(result.forecasts[0].weather[0].description);
-    
-    clone.find('.outwardTravelDurationBar').css('width', getTimePercentage(outwardTravelDuration, totalTripDuration) + '%')
-    clone.find('.outwardWalkDurationBar').css('width', getTimePercentage(outwardWalkDuration, totalTripDuration) + '%')
-    clone.find('.freeTimeDurationBar').css('width', getTimePercentage(freeTimeDuration, totalTripDuration) + '%')
-    clone.find('.returnWalkDurationBar').css('width', getTimePercentage(returnWalkDuration, totalTripDuration) + '%')
-    clone.find('.returnTravelDurationBar').css('width', getTimePercentage(returnTravelDuration, totalTripDuration) + '%')
-
-    clone.find('.card-title').text(title);
-    clone.find('td.outwardStart').text(getTime(outwardStart));
-    clone.find('td.outwardWalkDuration').text(outwardWalkDuration);
-    clone.find('td.outwardTravelDuration').text(outwardTravelDuration);
-    clone.find('td.outwardEnd').text(getTime(outwardEnd));
-    clone.find('td.returnStart').text(getTime(returnStart));
-    clone.find('td.returnWalkDuration').text(returnWalkDuration);
-    clone.find('td.returnTravelDuration').text(returnTravelDuration);
-    clone.find('td.returnEnd').text(getTime(returnEnd));
-    clone.find('td.weather').text(weather);
-    clone.find('td.difficulty').text(difficulty);
-    clone.find('td.freeTimeDuration').text(freeTimeDuration);
-    
-    clone.removeAttr('id');
-    clone.removeAttr('style');
-    clone.appendTo('#solutions');
+  let startIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
   });
+  L.marker([data.start_location.lat, data.start_location.lng], {icon: startIcon}).addTo(map);
+  
+  let endIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+  L.marker([data.destination.location.lat, data.destination.location.lng], {icon: endIcon}).addTo(map);
+}
+
+function createResults(results) {
+  $('#solutions-container .badge').text(results.length);
+
+  if (results.length) {
+    results.forEach((result, index) => {
+      let clone = $('#toClone').clone();
+  
+      let title = result.destination.name;
+
+      // TEMP
+      if (title.split(' - ')[0] === title.split(' - ')[1]) {
+        title = title.split(' - ')[0];
+      }
+  
+      let outwardStart = new Date(result.outward_itinerary.interval.start);
+      let outwardWalkDuration = result.outward_itinerary.walk_duration;
+      let outwardTravelDuration = result.outward_itinerary.travel_duration;
+      let outwardEnd = new Date(result.outward_itinerary.interval.end);
+      let returnStart = new Date(result.return_itinerary.interval.start);
+      let returnWalkDuration = result.return_itinerary.walk_duration;
+      let returnTravelDuration = result.return_itinerary.travel_duration;
+      let returnEnd = new Date(result.return_itinerary.interval.end);
+      let totalTripDuration = result.info.total_trip_duration;
+  
+      let difficulty = result.destination.difficulty;
+      let weather = capitalizeFirstLetter(result.forecasts[0].weather[0].description);
+      let weatherIcon = 'http://openweathermap.org/img/wn/' + result.forecasts[0].weather[0].icon + '@2x.png';
+      let destinationDuration = result.destination.duration;
+      let freeTimeDuration = result.info.free_time;
+      
+      clone.find('.outwardTravelDurationBar').css('width', getTimePercentage(outwardTravelDuration, totalTripDuration) + '%')
+      clone.find('.outwardWalkDurationBar').css('width', getTimePercentage(outwardWalkDuration, totalTripDuration) + '%')
+      clone.find('.destinationDurationBar').css('width', getTimePercentage(destinationDuration, totalTripDuration) + '%')
+      clone.find('.freeTimeDurationBar').css('width', getTimePercentage(freeTimeDuration, totalTripDuration) + '%')
+      clone.find('.returnWalkDurationBar').css('width', getTimePercentage(returnWalkDuration, totalTripDuration) + '%')
+      clone.find('.returnTravelDurationBar').css('width', getTimePercentage(returnTravelDuration, totalTripDuration) + '%')
+  
+      clone.find('.card-title').text(title);
+  
+      clone.find('td.outwardStart').text(getTime(outwardStart));
+      clone.find('td.outwardWalkDuration').text(outwardWalkDuration);
+      clone.find('td.outwardTravelDuration').text(outwardTravelDuration);
+      clone.find('td.outwardEnd').text(getTime(outwardEnd));
+      clone.find('td.returnStart').text(getTime(returnStart));
+      clone.find('td.returnWalkDuration').text(returnWalkDuration);
+      clone.find('td.returnTravelDuration').text(returnTravelDuration);
+      clone.find('td.returnEnd').text(getTime(returnEnd));
+  
+      clone.find('td.weather span').text(weather);
+      clone.find('td.weather img').attr('src', weatherIcon);
+      clone.find('td.difficulty').text(difficulty);
+      clone.find('td.destinationDuration').text(destinationDuration);
+      clone.find('td.freeTimeDuration').text(freeTimeDuration);
+      
+      clone.removeAttr('id');
+      clone.removeAttr('style');
+      clone.appendTo('#solutions');
+
+      let mapContainer = clone.find('.map');
+      mapContainer.attr('id', 'map-' + index);
+      makeMap(mapContainer, result);
+    });
+  
+  } else {
+    $('#solutions .noResults').show();
+  }
 }
 
 $(document).ready(function () {
-  var form = $('form');
-  var inputs = form.find("input, button[type=submit]");
+  let form = $('form');
+  let inputs = form.find("input, button[type=submit]");
 
   inputs.on('input', function() {
     form.removeClass('was-validated');
@@ -118,8 +174,12 @@ $(document).ready(function () {
     event.preventDefault();
     event.stopPropagation();
 
-    var data = objectifyForm(form.serializeArray())
-    var json = {
+    $('#solutions-container .badge').text(0);
+    $('#solutions > .card:not(#toClone)').remove();
+    $('#solutions .alert').hide();
+
+    let data = objectifyForm(form.serializeArray())
+    let json = {
       'location': {
         'lat': parseFloat(data.lat),
         'lng': parseFloat(data.lng)
@@ -133,7 +193,7 @@ $(document).ready(function () {
       'max_travel': formatTimedelta(data.maxTravel),
       'max_walk': formatTimedelta(data.maxWalk),
       'weather_ids': createWeatherIds(data),
-      'max_results': 100
+      'max_results': 25
     }
     
     if (form[0].checkValidity() !== false) {
@@ -162,6 +222,7 @@ $(document).ready(function () {
           inputs.prop("disabled", false);
           $(".loading").hide();
           $(".notLoading").show();
+          $('#solutions .errorMessage').show();
           console.log(error.responseJSON);
         }
       });
