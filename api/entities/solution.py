@@ -67,9 +67,15 @@ class Solution:
     @property
     def free_time(self) -> timedelta:
         '''Calculate the free time remaining'''
+        destination_duration = (
+            self.destination.duration
+            if self.destination and hasattr(self.destination, 'duration')
+            else 0
+        )
         return (
             self.interval.duration
             - self.total_trip_duration
+            - destination_duration
         )
     
     def get_info(self) -> dict:
