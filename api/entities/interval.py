@@ -35,7 +35,7 @@ class Interval:
         '''Checks if a datetime is between the interval start and end'''
         return self.start <= time.localize_datetime(dt) <= self.end
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         '''Creates a dictionary from the Interval object'''
         return {
             'start': self.start,

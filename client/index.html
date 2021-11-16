@@ -355,9 +355,9 @@
       $(function () {
         $('[data-toggle="tooltip"]').tooltip();
 
-        var tomorrow = new Date()
-        tomorrow.setDate(tomorrow.getDate() + 1)
-        tomorrow = new Date().toISOString().split('T')[0];
+        var tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow = tomorrow.toISOString().split('T')[0];
         document.getElementsByName('date')[0].setAttribute('min', tomorrow);
         document.getElementsByName('date')[0].setAttribute('value', tomorrow);
       })

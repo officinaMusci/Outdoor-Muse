@@ -6,7 +6,7 @@ Outdoor Muse is a web service that allows you to discover new outdoor places, kn
 
 ## .env file
 
-To configure the project, create a .env file (gitignored) in  the project root :
+To configure the project, create a .env file (gitignored) in the project root :
 
 ```
 LANGUAGE='en'
@@ -26,7 +26,7 @@ FLASK_ENV='development'
 sh PROJECT_PATH/install.sh
 ```
 
-It automatically runs a test after the installing process.
+It automatically generates HTML doc and runs a test after the installing process.
 
 ## Test:
 

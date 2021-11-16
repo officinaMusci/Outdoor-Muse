@@ -13,7 +13,7 @@ from utils import time
 from services import database
 
 
-class PlaceRow( database.Base ):
+class PlaceRow(database.Base):
     '''ORM Place row representation'''
     __tablename__ = 'place'
 

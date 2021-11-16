@@ -8,4 +8,6 @@ Pipfile
 __pycache__/
 *.pyc
 
-IGNORE_*
+doc/
+
+_IGNORE_*

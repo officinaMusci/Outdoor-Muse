@@ -25,7 +25,9 @@ class TestDatabase(unittest.TestCase):
             os.path.dirname(os.path.realpath(__file__)),
             'test.db'
         )
+
         self.delete_db()
+        
         os.environ['DB_ENGINE'] = f"sqlite:///{self.db_path}"
 
     def test_query_table(self):
@@ -47,5 +49,5 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(place, reconverted_place)
     
     def tearDown(self):
-        '''Finalise the test'''
+        '''Finalise the test removing the test database file'''
         self.delete_db()

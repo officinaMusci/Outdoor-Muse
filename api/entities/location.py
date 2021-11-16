@@ -15,7 +15,7 @@ class Location:
     lat:float
     lng:float
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         '''Creates a dictionary from the Location object'''
         return {
             'lat': self.lat,

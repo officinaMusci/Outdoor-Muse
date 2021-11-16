@@ -16,7 +16,7 @@ from utils import time
 from services import database
 
 
-class QueryRow( database.Base ):
+class QueryRow(database.Base):
     '''ORM Query row representation'''
     __tablename__ = 'query'
 
