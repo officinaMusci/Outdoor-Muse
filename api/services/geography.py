@@ -75,7 +75,7 @@ def fetch_places_nearby(
     place_type:str,
     language:str=language
 ) -> List[Place]:
-    '''Uses database stored places and Google Places API to make a Nearby Search.
+    '''Uses database places and Google Places API to make a Nearby Search.
     
     ARGS:
         location: The position from which to search.

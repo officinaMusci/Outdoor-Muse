@@ -57,11 +57,20 @@ class Solution:
         )
     
     @property
+    def waiting_duration(self) -> timedelta:
+        '''Calculate and return the waiting duration'''
+        return (
+            self.outward_itinerary.waiting_duration
+            + self.return_itinerary.waiting_duration
+        )
+    
+    @property
     def total_trip_duration(self) -> timedelta:
         '''Calculate and return the total trip duration'''
         return (
             self.walk_duration
             + self.travel_duration
+            + self.waiting_duration
         )
 
     @property

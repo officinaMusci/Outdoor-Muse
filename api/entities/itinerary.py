@@ -18,10 +18,10 @@ class Itinerary:
         start_location: The location where the itinerary begins.
         end_location: The location where the itinerary ends.
         interval: The interval in which the itinerary should be performed.
-        walk_duration: The walk duration of the itinerary.
-        travel_duration: The travel duration of the itinerary.
         distance: The distance covered by the itinerary in meters.
         steps: The steps that make up the itinerary.
+        walk_duration: The walk duration of the itinerary.
+        travel_duration: The travel duration of the itinerary.
     '''
     start_location:Location
     end_location:Location
@@ -32,7 +32,7 @@ class Itinerary:
     travel_duration:timedelta=None
 
     def __post_init__(self):
-        '''Calculate the walk and travel durations'''
+        '''Calculate the walk, travel and waiting durations'''
         walk_seconds = 0
         travel_seconds = 0
 
@@ -42,8 +42,15 @@ class Itinerary:
             else:
                 travel_seconds += step['duration']['value']
 
-        self.walk_duration=timedelta(seconds=walk_seconds)
-        self.travel_duration=timedelta(seconds=travel_seconds)
+        self.walk_duration = timedelta(seconds=walk_seconds)
+        self.travel_duration = timedelta(seconds=travel_seconds)
+
+        waiting_duration = self.interval.duration - (
+            self.walk_duration
+            + self.travel_duration
+        )
+
+        self.travel_duration += waiting_duration
 
     @classmethod
     def from_dict(cls, dictionary:dict):
