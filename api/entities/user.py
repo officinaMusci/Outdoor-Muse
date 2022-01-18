@@ -6,7 +6,6 @@ from sqlalchemy import DateTime as ORMDateTime
 from sqlalchemy import Integer as ORMInteger
 from sqlalchemy import String as ORMString
 from sqlalchemy import Boolean as ORMBoolean
-import flask
 from werkzeug import security
 import flask_jwt_extended as flask_jwt
 
@@ -19,7 +18,8 @@ TEST_USER = {
     'password': 'test_password',
     'email': 'test@test.test',
     'confirmed': True,
-    'role': 'test_role'
+    'role': 'test_role',
+    'points': 1000
 }
 
 
@@ -34,12 +34,13 @@ class UserRow(database.Base):
     password = ORMColumn(ORMString, nullable=False)
     email = ORMColumn(ORMString, nullable=False)
     confirmed = ORMColumn(ORMBoolean, default=False)
-    role = ORMColumn(ORMString, nullable=False)
+    role = ORMColumn(ORMString, default='user')
+    points = ORMColumn(ORMInteger, default=0)
 
 
 @dataclass
 class User:
-    '''user dataclass.
+    '''User dataclass.
 
     It represents a user.
     
@@ -56,8 +57,9 @@ class User:
     username:str
     password:str
     email:str
-    confirmed:bool
-    role:str
+    confirmed:bool=False
+    role:str='user'
+    points:int=0
 
     id:int=0
     created:datetime=None
@@ -76,9 +78,14 @@ class User:
                 if 'updated' in dictionary else None,
             username=dictionary['username'],
             password=dictionary['password'],
-            email=dictionary['email'],
-            confirmed=dictionary['confirmed'],
-            role=dictionary['role'],
+            email=dictionary['email']
+                if 'email' in dictionary else None,
+            confirmed=dictionary['confirmed']
+                if 'confirmed' in dictionary else False,
+            role=dictionary['role']
+                if 'role' in dictionary else 'user',
+            points=dictionary['points']
+                if 'points' in dictionary else 0,
         )
 
 
@@ -93,7 +100,8 @@ class User:
             password=row.password,
             email=row.email,
             confirmed=row.confirmed,
-            role=row.role
+            role=row.role,
+            points=row.points
         )
 
 
@@ -107,7 +115,8 @@ class User:
             password=self.password,
             email=self.email,
             confirmed=self.confirmed,
-            role=self.role
+            role=self.role,
+            points=self.points
         )
 
 
@@ -152,6 +161,7 @@ class User:
                 user_row.email = self.email
                 user_row.confirmed = self.confirmed
                 user_row.role = self.role
+                user_row.points = self.points
 
                 db_session.flush()
             
