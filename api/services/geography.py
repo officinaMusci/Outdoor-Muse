@@ -91,7 +91,7 @@ def fetch_places_nearby(
         db_places = filter_places_by_distance(
             location,
             [
-                Place.from_row(x)
+                Place.get_from_id(x.id)
                 for x in db_session.query(PlaceRow).all()
             ],
             radius

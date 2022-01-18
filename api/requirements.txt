@@ -3,5 +3,9 @@ pdoc3
 pytz
 Flask
 flask_cors
+flask_jwt_extended
 sqlalchemy
 googlemaps
+
+bs4
+lxml

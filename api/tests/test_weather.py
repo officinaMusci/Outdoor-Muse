@@ -1,9 +1,7 @@
 import unittest
 
-from entities.query import Query
+from entities.query import Query, TEST_QUERY
 from services import weather
-
-from . import resources
 
 
 class TestWeather(unittest.TestCase):
@@ -11,7 +9,7 @@ class TestWeather(unittest.TestCase):
 
     def setUp(self):
         '''Initialize the test'''
-        self.query = Query.from_dict(resources.QUERY_DICT)
+        self.query = Query.from_dict(TEST_QUERY)
 
     def test_get_forecasts(self):
         '''Tests the weather daily forecasts'''

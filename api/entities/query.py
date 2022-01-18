@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List
 
 from sqlalchemy import Column as ORMColumn
@@ -16,11 +16,40 @@ from utils import time
 from services import database
 
 
+datetime_format = time.datetime_format()
+
+datetime_start = datetime.now(timezone.utc).replace(hour=9, minute=0, second=0) + timedelta(days=1)
+datetime_end = datetime_start + timedelta(hours=10)
+
+TEST_QUERY = {
+    'location': {
+        'lat': 46.204391,
+        'lng': 6.143158
+    },
+    'interval': {
+        'start': datetime_start.strftime(datetime_format),
+        'end': datetime_end.strftime(datetime_format)
+    },
+    'radius': 150000,
+    'type': 'hike',
+    'max_travel': '4:00:00',
+    'max_walk': '2:00:00',
+    'weather_ids': [
+		301,
+		615,
+		800
+	],
+	'max_results': 10
+}
+
+
 class QueryRow(database.Base):
     '''ORM Query row representation'''
     __tablename__ = 'query'
 
-    id = ORMColumn(ORMInteger, primary_key=True, nullable=False)
+    id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
+    created = ORMColumn(ORMDateTime, default=datetime.utcnow)
+    updated = ORMColumn(ORMDateTime, default=datetime.utcnow)
     location_lat = ORMColumn(ORMFloat, nullable=False)
     location_lng = ORMColumn(ORMFloat, nullable=False)
     interval_start = ORMColumn(ORMDateTime)
@@ -41,6 +70,9 @@ class Query:
     It represents a search query containing all the search criteria.
     
     Attributes:
+        id: The unique ID for the database.
+        created: The date the database row was created.
+        updated: The latest date the database row has been updated.
         location: The start location.
         interval: The interval available for the travel.
         radius: The radius within to search.
@@ -61,15 +93,14 @@ class Query:
     max_results:int=10
     language:str=None
 
+    id:int=0
+    created:datetime=None
+    updated:datetime=None
+    
+
     @classmethod
     def from_dict(cls, dictionary:dict):
-        '''Creates a Query object from a dictionary.
-        
-        Creates a Query object using a Flask POST request dict.
-
-        ARGS:
-            dictionary: The dictionary received from Flask.
-        '''
+        '''Creates and returns a Query object from a dictionary'''
         return Query(
             location=Location.from_dict(dictionary['location']),
             interval=Interval.from_dict(dictionary['interval']),
@@ -88,10 +119,14 @@ class Query:
                 if 'language' in dictionary else cls.language
         )
 
+
     @classmethod
-    def from_row(cls, row:QueryRow):
+    def _from_row(cls, row:QueryRow):
         '''Returns a Query object obtained from a QueryRow object'''
         return Query(
+            id=row.id,
+            created=time.localize_datetime(row.created),
+            updated=time.localize_datetime(row.updated),
             location=Location(
                 lat=row.location_lat,
                 lng=row.location_lng
@@ -108,18 +143,9 @@ class Query:
             max_results=row.max_results,
             language=row.language
         )
-    
-    @classmethod
-    def from_row_id(cls, id:int):
-        '''Returns a Query object obtained from a QueryRow id'''
-        with database.create_session().begin() as db_session:
-            query_row = db_session.query(QueryRow).get(id)
-            query = Query.from_row(query_row)
-            db_session.close()
-        
-        return query
 
-    def to_row(self) -> QueryRow:
+
+    def _to_row(self) -> QueryRow:
         '''Returns a QueryRow object obtained from a Query object'''
         return QueryRow(
             location_lat=self.location.lat,
@@ -134,14 +160,82 @@ class Query:
             max_results=self.max_results,
             language=self.language
         )
-    
-    def store_row(self) -> int:
-        '''Store the Query in the database'''
-        query_row = self.to_row()
+
+
+    def _insert_row(self) -> int:
+        '''Insert the Query row in the database'''
+        query_row = self._to_row()
 
         with database.create_session().begin() as db_session:
             db_session.add(query_row)
             db_session.flush()
-            id = query_row.id
+            query_id = query_row.id
         
-        return id
+        with database.create_session().begin() as db_session:
+            query_row = db_session.query(QueryRow).get(query_id)
+            db_session.close()
+        
+        self.id = query_row.id
+        self.created = time.localize_datetime(query_row.created)
+        self.updated = time.localize_datetime(query_row.updated)
+
+        return self.id
+    
+
+    def _update_row(self) -> bool:
+        '''Update the Query row in the database'''
+        if self.id:
+            with database.create_session().begin() as db_session:
+                query_row = db_session.query(QueryRow).get(self.id)
+
+                query_row.updated = datetime.utcnow()
+                query_row.location = self.location
+                query_row.interval = self.interval
+                query_row.radius = self.radius
+                query_row.place_type = self.place_type
+                query_row.max_travel = self.max_travel
+                query_row.max_walk = self.max_walk
+                query_row.weather_ids = self.weather_ids
+                query_row.max_results = self.max_results
+                query_row.language = self.language
+
+                db_session.flush()
+                
+            return self.id
+        
+        return None
+
+
+    def _delete_row(self) -> bool:
+        '''Delete the Query row from the database'''
+        if self.id:
+            with database.create_session().begin() as db_session:
+                query_row = db_session.query(QueryRow).get(self.id)
+                db_session.delete(query_row)
+                db_session.flush()
+            
+            return True
+        
+        return False
+
+
+    def save(self):
+        '''Save the Query in the database'''
+        return self._update_row() or self._insert_row()
+
+
+    def delete(self):
+        '''Delete the Query from the database'''
+        return self._delete_row()
+
+
+    @classmethod
+    def get_from_id(cls, id:int):
+        '''Returns a Query object obtained from a QueryRow id'''
+        with database.create_session().begin() as db_session:
+            query_row = db_session.query(QueryRow).get(id)
+            query = Query._from_row(query_row) if query_row else None
+            
+            db_session.close()
+        
+        return query

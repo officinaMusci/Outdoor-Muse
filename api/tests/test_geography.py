@@ -1,10 +1,8 @@
 import unittest
 
-from entities.query import Query
-from entities.place import Place
+from entities.query import Query, TEST_QUERY
+from entities.place import Place, TEST_PLACE
 from services import geography
-
-from . import resources
 
 
 class TestGeography(unittest.TestCase):
@@ -12,8 +10,8 @@ class TestGeography(unittest.TestCase):
 
     def setUp(self):
         '''Initialize the test'''
-        self.query = Query.from_dict(resources.QUERY_DICT)
-        self.place = Place.from_dict(resources.PLACE_DICT)
+        self.query = Query.from_dict(TEST_QUERY)
+        self.place = Place.from_dict(TEST_PLACE)
 
     def test_geography_fetch_places_nearby(self):
         '''Tests the geography nearby search'''
