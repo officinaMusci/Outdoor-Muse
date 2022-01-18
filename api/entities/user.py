@@ -53,6 +53,7 @@ class User:
         email: The user email address.
         confirmed: If the user has been confirmed.
         role: The user role.
+        points: The user earned points.
     '''
     username:str
     password:str
