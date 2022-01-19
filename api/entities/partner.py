@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+import random
 
 from sqlalchemy import Column as ORMColumn
 from sqlalchemy import DateTime as ORMDateTime
@@ -12,19 +13,10 @@ from sqlalchemy.orm import relationship
 from services import database
 from .location import Location
 from utils import time
+from utils.faker import faker
 
 
-TEST_PARTNER = {
-    'name': 'Test Partner',
-	'location': {
-		'lat': 9.2754524816615,
-		'lng': 46.791814126484
-	},
-    'types': [
-        'restaurant'
-    ],
-    'points': 1000
-}
+TYPES = ['restaurant']
 
 
 class PartnerRow(database.Base):
@@ -38,7 +30,6 @@ class PartnerRow(database.Base):
     location_lat = ORMColumn(ORMFloat, nullable=False)
     location_lng = ORMColumn(ORMFloat, nullable=False)
     types = ORMColumn(ORMPickleType, nullable=False)
-    points = ORMColumn(ORMInteger, default=0)
 
     comments = relationship('CommentRow', cascade='delete')
 
@@ -61,11 +52,27 @@ class Partner:
     location:Location
     types:str
 
-    points:int=0
-
-    id:int=0
+    id:int=None
     created:datetime=None
     updated:datetime=None
+
+
+    @classmethod
+    def generate_random(cls):
+        '''Generates a random Query object'''
+        coordinates = faker.local_latlng(
+            country_code='CH',
+            coords_only=True
+        )
+
+        return Partner(
+            name=faker.unique.company(),
+            location=Location.from_dict({
+                'lat': coordinates[0],
+                'lng': coordinates[1]
+            }),
+            types=random.sample(TYPES, 1)
+        )
 
 
     @classmethod
@@ -80,9 +87,7 @@ class Partner:
                 if 'updated' in dictionary else None,
             name=dictionary['name'],
             location=Location.from_dict(dictionary['location']),
-            types=dictionary['types'],
-            points=dictionary['points']
-                if 'points' in dictionary else 0
+            types=dictionary['types']
         )
 
 
@@ -98,8 +103,7 @@ class Partner:
                 lat=row.location_lat,
                 lng=row.location_lng
             ),
-            types=row.types,
-            points=row.points
+            types=row.types
         )
 
 
@@ -109,8 +113,7 @@ class Partner:
             name=self.name,
             location_lat=self.location.lat,
             location_lng=self.location.lng,
-            types=self.types,
-            points=self.points
+            types=self.types
         )
 
 
@@ -144,7 +147,6 @@ class Partner:
                 partner_row.name = self.name
                 partner_row.location = self.location
                 partner_row.types = self.types
-                partner_row.points = self.points
 
                 db_session.flush()
                 
@@ -166,12 +168,12 @@ class Partner:
         return False
 
 
-    def save(self):
+    def save(self) -> int:
         '''Save the Partner in the database'''
         return self._update_row() or self._insert_row()
 
 
-    def delete(self):
+    def delete(self) -> bool:
         '''Delete the Partner from the database'''
         return self._delete_row()
 

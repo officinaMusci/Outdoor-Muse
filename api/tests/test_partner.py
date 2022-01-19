@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from entities.partner import Partner, TEST_PARTNER
+from entities.partner import Partner
 from entities.location import Location
 
 
@@ -28,7 +28,7 @@ class TestPartner(unittest.TestCase):
 
     def test_create(self):
         '''Tests the creation in the database'''
-        partner = Partner.from_dict(TEST_PARTNER)
+        partner = Partner.generate_random()
         partner_id = partner.save()
         retrieved_partner = Partner.get_from_id(partner_id)
 
@@ -37,10 +37,10 @@ class TestPartner(unittest.TestCase):
 
     def test_update(self):
         '''Tests the update in the database'''
-        partner = Partner.from_dict(TEST_PARTNER)
+        partner = Partner.generate_random()
         partner_id = partner.save()
 
-        partner_2 = Partner.from_dict(TEST_PARTNER)
+        partner_2 = Partner.generate_random()
         partner_id_2 = partner_2.save()
 
         partner_2.name = 100000
@@ -59,10 +59,10 @@ class TestPartner(unittest.TestCase):
 
     def test_delete(self):
         '''Tests the deletion from the database'''
-        partner = Partner.from_dict(TEST_PARTNER)
+        partner = Partner.generate_random()
         partner_id = partner.save()
 
-        partner_2 = Partner.from_dict(TEST_PARTNER)
+        partner_2 = Partner.generate_random()
         partner_id_2 = partner_2.save()
         partner_2.delete()
 

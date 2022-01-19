@@ -42,7 +42,7 @@ class SolutionFactory:
         self._places = geography.fetch_places_nearby(
             location=query.location,
             radius=query.radius,
-            place_type=query.place_type
+            types=query.types
         )
     
     def _fetch_itineraries(self):

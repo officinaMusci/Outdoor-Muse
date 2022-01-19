@@ -1,10 +1,10 @@
 import os
 import unittest
 
-from entities.user import User, TEST_USER
-from entities.place import Place, TEST_PLACE
-from entities.partner import Partner, TEST_PARTNER
-from entities.comment import Comment, TEST_COMMENT
+from entities.user import User
+from entities.place import Place
+from entities.partner import Partner
+from entities.comment import Comment
 
 
 class TestComment(unittest.TestCase):
@@ -17,19 +17,22 @@ class TestComment(unittest.TestCase):
     
 
     def create_comment_with_relations(self):
-        user = User.from_dict(TEST_USER)
+        user = User.generate_random()
         user_id = user.save()
 
-        place = Place.from_dict(TEST_PLACE)
+        place = Place.generate_random()
         place_id = place.save()
 
-        partner = Partner.from_dict(TEST_PARTNER)
+        partner = Partner.generate_random()
         partner_id = partner.save()
 
-        parent = Comment.from_dict(TEST_COMMENT)
+        parent = Comment.generate_random()
+        parent.user_id = user_id
+        parent.place_id = place_id
+        parent.partner_id = partner_id
         parent_id = parent.save()
 
-        comment = Comment.from_dict(TEST_COMMENT)
+        comment = Comment.generate_random()
         comment.user_id = user_id
         comment.place_id = place_id
         comment.partner_id = partner_id
@@ -53,7 +56,7 @@ class TestComment(unittest.TestCase):
 
     def test_create(self):
         '''Tests the creation in the database'''
-        comment = Comment.from_dict(TEST_COMMENT)
+        comment = Comment.generate_random()
         comment_id = comment.save()
         
         retrieved_comment = Comment.get_from_id(comment_id)
@@ -99,10 +102,10 @@ class TestComment(unittest.TestCase):
 
     def test_update(self):
         '''Tests the update in the database'''
-        comment = Comment.from_dict(TEST_COMMENT)
+        comment = Comment.generate_random()
         comment_id = comment.save()
 
-        comment_2 = Comment.from_dict(TEST_COMMENT)
+        comment_2 = Comment.generate_random()
         comment_id_2 = comment_2.save()
 
         comment_2.content = 'My comment 2'
@@ -118,10 +121,10 @@ class TestComment(unittest.TestCase):
 
     def test_delete(self):
         '''Tests the deletion from the database'''
-        comment = Comment.from_dict(TEST_COMMENT)
+        comment = Comment.generate_random()
         comment_id = comment.save()
 
-        comment_2 = Comment.from_dict(TEST_COMMENT)
+        comment_2 = Comment.generate_random()
         comment_id_2 = comment_2.save()
         comment_2.delete()
 

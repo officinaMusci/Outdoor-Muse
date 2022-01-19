@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import List
+import random
+from random import randrange
 
 from sqlalchemy import Column as ORMColumn
 from sqlalchemy import String as ORMString
@@ -12,35 +14,10 @@ from sqlalchemy import PickleType as ORMPickleType
 
 from .location import Location
 from .interval import Interval
+from .place import TYPES
 from utils import time
-from services import database
-
-
-datetime_format = time.datetime_format()
-
-datetime_start = datetime.now(timezone.utc).replace(hour=9, minute=0, second=0) + timedelta(days=1)
-datetime_end = datetime_start + timedelta(hours=10)
-
-TEST_QUERY = {
-    'location': {
-        'lat': 46.204391,
-        'lng': 6.143158
-    },
-    'interval': {
-        'start': datetime_start.strftime(datetime_format),
-        'end': datetime_end.strftime(datetime_format)
-    },
-    'radius': 150000,
-    'type': 'hike',
-    'max_travel': '4:00:00',
-    'max_walk': '2:00:00',
-    'weather_ids': [
-		301,
-		615,
-		800
-	],
-	'max_results': 10
-}
+from utils.faker import faker
+from services import database, weather
 
 
 class QueryRow(database.Base):
@@ -55,7 +32,7 @@ class QueryRow(database.Base):
     interval_start = ORMColumn(ORMDateTime)
     interval_end = ORMColumn(ORMDateTime)
     radius = ORMColumn(ORMInteger, nullable=False)
-    place_type = ORMColumn(ORMString, nullable=False)
+    types = ORMColumn(ORMPickleType, nullable=False)
     max_travel = ORMColumn(ORMInterval)
     max_walk = ORMColumn(ORMInterval)
     weather_ids = ORMColumn(ORMPickleType)
@@ -76,7 +53,7 @@ class Query:
         location: The start location.
         interval: The interval available for the travel.
         radius: The radius within to search.
-        place_type: The type of place to search.
+        types: The types of place to search.
         max_travel: The maximum travel time (including walk time).
         max_walk: The maximum walk time.
         weather_ids: The forecasts accepted for the query.
@@ -86,17 +63,61 @@ class Query:
     location:Location
     interval:Interval
     radius:int
-    place_type:str
+    types:List[str]
     max_travel:timedelta
     max_walk:timedelta
     weather_ids:List[int]
     max_results:int=10
     language:str=None
 
-    id:int=0
+    id:int=None
     created:datetime=None
     updated:datetime=None
     
+
+    @classmethod
+    def generate_random(cls):
+        '''Generates a random Query object'''
+        when = randrange(7) + 1
+
+        datetime_format = time.datetime_format()
+        datetime_start = (
+            datetime.now(timezone.utc).replace(
+                hour=(randrange(8) + 9),
+                minute=0,
+                second=0
+            )
+            + timedelta(days=when)
+        )
+        datetime_end = datetime_start + timedelta(hours=randrange(8) + 1 - when)
+
+        coordinates = faker.local_latlng(
+            country_code='CH',
+            coords_only=True
+        )
+
+        weather_ids = random.sample(
+            [v[0] for k, v in weather.id_groups.items()],
+            randrange(len(weather.id_groups.keys())) + 1
+        )
+
+        return Query(
+            location=Location.from_dict({
+                'lat': coordinates[0],
+                'lng': coordinates[1]
+            }),
+            interval=Interval.from_dict({
+                'start': datetime_start.strftime(datetime_format),
+                'end': datetime_end.strftime(datetime_format)
+            }),
+            radius=(randrange(100) + 1) *  1000,
+            types=TYPES,
+            max_travel=timedelta(hours=randrange(4) + 1),
+            max_walk=timedelta(hours=randrange(2) + .5),
+            weather_ids=weather_ids,
+            max_results=10,
+        )
+
 
     @classmethod
     def from_dict(cls, dictionary:dict):
@@ -111,7 +132,7 @@ class Query:
             location=Location.from_dict(dictionary['location']),
             interval=Interval.from_dict(dictionary['interval']),
             radius=dictionary['radius'],
-            place_type=dictionary['type'],
+            types=dictionary['types'],
             max_travel=time.str_to_delta(dictionary['max_travel'])
                 if isinstance(dictionary['max_travel'], str)
                 else dictionary['max_travel'],
@@ -142,7 +163,7 @@ class Query:
                 end=time.localize_datetime(row.interval_end)
             ),
             radius=row.radius,
-            place_type=row.place_type,
+            types=row.types,
             max_travel=row.max_travel,
             max_walk=row.max_walk,
             weather_ids=row.weather_ids,
@@ -159,7 +180,7 @@ class Query:
             interval_start=self.interval.start,
             interval_end=self.interval.end,
             radius=self.radius,
-            place_type=self.place_type,
+            types=self.types,
             max_travel=self.max_travel,
             max_walk=self.max_walk,
             weather_ids=self.weather_ids,
@@ -198,7 +219,7 @@ class Query:
                 query_row.location = self.location
                 query_row.interval = self.interval
                 query_row.radius = self.radius
-                query_row.place_type = self.place_type
+                query_row.types = self.types
                 query_row.max_travel = self.max_travel
                 query_row.max_walk = self.max_walk
                 query_row.weather_ids = self.weather_ids
@@ -225,12 +246,12 @@ class Query:
         return False
 
 
-    def save(self):
+    def save(self) -> int:
         '''Save the Query in the database'''
         return self._update_row() or self._insert_row()
 
 
-    def delete(self):
+    def delete(self) -> bool:
         '''Delete the Query from the database'''
         return self._delete_row()
 

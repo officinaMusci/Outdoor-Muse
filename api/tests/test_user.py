@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from entities.user import User, TEST_USER
+from entities.user import User
 
 
 class TestUser(unittest.TestCase):
@@ -27,7 +27,7 @@ class TestUser(unittest.TestCase):
 
     def test_create(self):
         '''Tests the creation in the database'''
-        user = User.from_dict(TEST_USER)
+        user = User.generate_random()
         user_id = user.save()
         retrieved_user = User.get_from_id(user_id)
 
@@ -36,14 +36,14 @@ class TestUser(unittest.TestCase):
 
     def test_update(self):
         '''Tests the update in the database'''
-        user = User.from_dict(TEST_USER)
+        user = User.generate_random()
         user_id = user.save()
 
-        user_2 = User.from_dict(TEST_USER)
+        user_2 = User.generate_random()
         user_id_2 = user_2.save()
 
-        user_2.username = 'test_user_2'
-        user_2.password = 'test_password_2'
+        user_2.email = User.generate_random().email
+        user_2.password = User.generate_random().password
 
         user_2.save()
 
@@ -55,10 +55,10 @@ class TestUser(unittest.TestCase):
 
     def test_delete(self):
         '''Tests the deletion from the database'''
-        user = User.from_dict(TEST_USER)
+        user = User.generate_random()
         user_id = user.save()
 
-        user_2 = User.from_dict(TEST_USER)
+        user_2 = User.generate_random()
         user_id_2 = user_2.save()
         user_2.delete()
 
@@ -71,32 +71,32 @@ class TestUser(unittest.TestCase):
 
     def test_security(self):
         '''Tests the creation and modification of the password'''
-        user = User.from_dict(TEST_USER)
+        user = User.generate_random()
         user.save()
 
         # Try to retrieve the user from credentials
         retrieved_user = User.get_from_credentials(
-            username=user.username,
+            email=user.email,
             password=user.password
         )
         self.assertIsInstance(retrieved_user, User)
 
         # Modify password
         old_password = user.password
-        new_password = f"{user.password}_2"
+        new_password = User.generate_random().password
         user.password = new_password
         user.save()
 
         # Try to retrieve the user with old credentials
         retrieved_user = User.get_from_credentials(
-            username=user.username,
+            email=user.email,
             password=old_password
         )
         self.assertIsNone(retrieved_user)
 
         # Try to retrieve the user with new credentials
         retrieved_user = User.get_from_credentials(
-            username=user.username,
+            email=user.email,
             password=new_password
         )
         self.assertIsInstance(retrieved_user, User)

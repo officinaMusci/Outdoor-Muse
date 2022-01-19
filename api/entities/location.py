@@ -32,6 +32,6 @@ class Location:
             dictionary: The dictionary received from Flask.
         '''
         return Location(
-            lat=dictionary['lat'],
-            lng=dictionary['lng']
+            lat=float(dictionary['lat']),
+            lng=float(dictionary['lng'])
         )

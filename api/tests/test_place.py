@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from entities.place import Place, TEST_PLACE
+from entities.place import Place
 
 
 class TestPlace(unittest.TestCase):
@@ -27,7 +27,7 @@ class TestPlace(unittest.TestCase):
 
     def test_create(self):
         '''Tests the creation in the database'''
-        place = Place.from_dict(TEST_PLACE)
+        place = Place.generate_random()
         place_id = place.save()
         retrieved_place = Place.get_from_id(place_id)
 
@@ -36,10 +36,10 @@ class TestPlace(unittest.TestCase):
 
     def test_update(self):
         '''Tests the update in the database'''
-        place = Place.from_dict(TEST_PLACE)
+        place = Place.generate_random()
         place_id = place.save()
 
-        place_2 = Place.from_dict(TEST_PLACE)
+        place_2 = Place.generate_random()
         place_id_2 = place_2.save()
 
         place_2.distance = 100000 
@@ -55,10 +55,10 @@ class TestPlace(unittest.TestCase):
 
     def test_delete(self):
         '''Tests the deletion from the database'''
-        place = Place.from_dict(TEST_PLACE)
+        place = Place.generate_random()
         place_id = place.save()
 
-        place_2 = Place.from_dict(TEST_PLACE)
+        place_2 = Place.generate_random()
         place_id_2 = place_2.save()
         place_2.delete()
 

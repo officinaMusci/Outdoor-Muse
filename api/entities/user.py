@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from random import randrange
 
 from sqlalchemy import Column as ORMColumn
 from sqlalchemy import DateTime as ORMDateTime
@@ -12,16 +13,7 @@ import flask_jwt_extended as flask_jwt
 
 from services import database
 from utils import time
-
-
-TEST_USER = {
-	'username': 'test_user',
-    'password': 'test_password',
-    'email': 'test@test.test',
-    'confirmed': True,
-    'role': 'test_role',
-    'points': 1000
-}
+from utils.faker import faker
 
 
 class UserRow(database.Base):
@@ -31,11 +23,11 @@ class UserRow(database.Base):
     id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
     created = ORMColumn(ORMDateTime, default=datetime.utcnow)
     updated = ORMColumn(ORMDateTime, default=datetime.utcnow)
-    username = ORMColumn(ORMString, nullable=False)
-    password = ORMColumn(ORMString, nullable=False)
     email = ORMColumn(ORMString, nullable=False)
+    password = ORMColumn(ORMString, nullable=False)
     confirmed = ORMColumn(ORMBoolean, default=False)
     role = ORMColumn(ORMString, default='user')
+    name = ORMColumn(ORMString, nullable=True)
     points = ORMColumn(ORMInteger, default=0)
 
     comments = relationship('CommentRow')
@@ -51,23 +43,36 @@ class User:
         id: The unique ID for the database.
         created: The date the database row was created.
         updated: The latest date the database row has been updated.
-        username: The unique username for the user.
-        password: The user authentication password.
         email: The user email address.
+        password: The user authentication password.
         confirmed: If the user has been confirmed.
         role: The user role.
+        name: The user name.
         points: The points earned by the user.
     '''
-    username:str
-    password:str
     email:str
+    password:str
     confirmed:bool=False
     role:str='user'
+    name:str=None
     points:int=0
 
-    id:int=0
+    id:int=None
     created:datetime=None
     updated:datetime=None
+
+
+    @classmethod
+    def generate_random(cls):
+        '''Generates a random User object'''
+        return User(
+            email=faker.unique.email(),
+            password=faker.password(),
+            confirmed=False,
+            role='user',
+            name=faker.unique.name(),
+            points=randrange(10000 + 1)
+        )
 
 
     @classmethod
@@ -80,14 +85,14 @@ class User:
                 if 'created' in dictionary else None,
             updated=time.localize_datetime(dictionary['updated'])
                 if 'updated' in dictionary else None,
-            username=dictionary['username'],
-            password=dictionary['password'],
             email=dictionary['email']
                 if 'email' in dictionary else None,
+            password=dictionary['password'],
             confirmed=dictionary['confirmed']
                 if 'confirmed' in dictionary else False,
             role=dictionary['role']
                 if 'role' in dictionary else 'user',
+            name=dictionary['name'],
             points=dictionary['points']
                 if 'points' in dictionary else 0,
         )
@@ -100,11 +105,11 @@ class User:
             id=row.id,
             created=time.localize_datetime(row.created),
             updated=time.localize_datetime(row.updated),
-            username=row.username,
-            password=row.password,
             email=row.email,
+            password=row.password,
             confirmed=row.confirmed,
             role=row.role,
+            name=row.name,
             points=row.points
         )
 
@@ -115,11 +120,11 @@ class User:
             id=self.id,
             created=self.created,
             updated=self.updated,
-            username=self.username,
-            password=self.password,
             email=self.email,
+            password=self.password,
             confirmed=self.confirmed,
             role=self.role,
+            name=self.name,
             points=self.points
         )
 
@@ -160,11 +165,11 @@ class User:
                     )
 
                 user_row.updated = datetime.utcnow()
-                user_row.username = self.username
-                user_row.password = self.password
                 user_row.email = self.email
+                user_row.password = self.password
                 user_row.confirmed = self.confirmed
                 user_row.role = self.role
+                user_row.name = self.name
                 user_row.points = self.points
 
                 db_session.flush()
@@ -187,12 +192,12 @@ class User:
         return False
 
 
-    def save(self):
-        '''Save the User in the database'''
+    def save(self) -> int:
+        '''Save the User in the database and returns the ID'''
         return self._update_row() or self._insert_row()
 
 
-    def delete(self):
+    def delete(self) -> bool:
         '''Delete the User from the database'''
         return self._delete_row()
 
@@ -224,18 +229,18 @@ class User:
 
 
     @classmethod
-    def get_from_credentials(cls, username:str, password:str):
+    def get_from_credentials(cls, email:str, password:str):
         '''Gets the User object corresponding to the given credentials
     
         ARGS:
-            username: The User username.
+            email: The User email.
             password: The User password.
         RETURNS:
             user: The User object or None if the User has not been found.
         '''
         with database.create_session().begin() as db_session:
             user_row = db_session.query(UserRow).filter_by(
-                username=username
+                email=email
             ).first()
             
             user = User._from_row(user_row) if user_row else None

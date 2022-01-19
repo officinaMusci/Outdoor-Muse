@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from random import randrange
 
 from sqlalchemy import Column as ORMColumn
 from sqlalchemy import DateTime as ORMDateTime
@@ -10,16 +11,7 @@ from sqlalchemy.orm import relationship
 
 from services import database
 from utils import time
-
-
-TEST_COMMENT = {
-    'content': 'My comment',
-    'user_id': 0,
-    'parent_id': 0,
-    'partner_id': 0,
-    'place_id': 0,
-    'points': 1000
-}
+from utils.faker import faker
 
 
 class CommentRow(database.Base):
@@ -46,7 +38,6 @@ class CommentRow(database.Base):
         ForeignKey('place.id'),
         nullable=True
     )
-    points = ORMColumn(ORMInteger, default=0)
 
     parent = relationship('CommentRow', cascade='delete')
 
@@ -66,19 +57,25 @@ class Comment:
         parent_id: The parent comment id if this comment is a reply to it.
         partner_id: The id of the partner to which the comment refers.
         place_id: The id of the place to which the comment refers.
-        points: The points earned by the comment.
     '''
     content:str
-    user_id:int
+    user_id:int=None
     
-    parent_id:int=0
-    partner_id:int=0
-    place_id:int=0
-    points:int=0
+    parent_id:int=None
+    partner_id:int=None
+    place_id:int=None
 
-    id:int=0
+    id:int=None
     created:datetime=None
     updated:datetime=None
+
+
+    @classmethod
+    def generate_random(cls):
+        '''Generates a random Query object'''
+        return Comment(
+            content=faker.unique.sentence(nb_words=randrange(50) + 1)
+        )
 
 
     @classmethod
@@ -98,9 +95,7 @@ class Comment:
             partner_id=dictionary['partner_id']
                 if 'partner_id' in dictionary else 0,
             place_id=dictionary['place_id']
-                if 'place_id' in dictionary else 0,
-            points=dictionary['points']
-                if 'points' in dictionary else 0
+                if 'place_id' in dictionary else 0
         )
 
 
@@ -115,8 +110,7 @@ class Comment:
             user_id=row.user_id,
             parent_id=row.parent_id,
             partner_id=row.partner_id,
-            place_id=row.place_id,
-            points=row.points
+            place_id=row.place_id
         )
 
 
@@ -127,8 +121,7 @@ class Comment:
             user_id=self.user_id,
             parent_id=self.parent_id,
             partner_id=self.partner_id,
-            place_id=self.place_id,
-            points=self.points
+            place_id=self.place_id
         )
 
 
@@ -164,7 +157,6 @@ class Comment:
                 comment_row.parent_id = self.parent_id
                 comment_row.partner_id = self.partner_id
                 comment_row.place_id = self.place_id
-                comment_row.points = self.points
 
                 db_session.flush()
                 
@@ -186,12 +178,12 @@ class Comment:
         return False
 
 
-    def save(self):
+    def save(self) -> int:
         '''Save the Comment in the database'''
         return self._update_row() or self._insert_row()
 
 
-    def delete(self):
+    def delete(self) -> bool:
         '''Delete the Comment from the database'''
         return self._delete_row()
 

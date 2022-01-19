@@ -72,7 +72,7 @@ def filter_places_by_distance(
 def fetch_places_nearby(
     location:Location,
     radius:int,
-    place_type:str,
+    types:List[str],
     language:str=language
 ) -> List[Place]:
     '''Uses database places and Google Places API to make a Nearby Search.

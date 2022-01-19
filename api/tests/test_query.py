@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from entities.query import Query, TEST_QUERY
+from entities.query import Query
 
 
 class TestQuery(unittest.TestCase):
@@ -27,7 +27,7 @@ class TestQuery(unittest.TestCase):
 
     def test_create(self):
         '''Tests the creation in the database'''
-        query = Query.from_dict(TEST_QUERY)
+        query = Query.generate_random()
         query_id = query.save()
         retrieved_query = Query.get_from_id(query_id)
 
@@ -36,14 +36,14 @@ class TestQuery(unittest.TestCase):
 
     def test_update(self):
         '''Tests the update in the database'''
-        query = Query.from_dict(TEST_QUERY)
+        query = Query.generate_random()
         query_id = query.save()
 
-        query_2 = Query.from_dict(TEST_QUERY)
+        query_2 = Query.generate_random()
         query_id_2 = query_2.save()
 
-        query_2.radius = 100000
-        query_2.max_results = 10
+        query_2.radius = Query.generate_random().radius
+        query_2.max_results = Query.generate_random().max_results
 
         query_2.save()
 
@@ -55,10 +55,10 @@ class TestQuery(unittest.TestCase):
 
     def test_delete(self):
         '''Tests the deletion from the database'''
-        query = Query.from_dict(TEST_QUERY)
+        query = Query.generate_random()
         query_id = query.save()
 
-        query_2 = Query.from_dict(TEST_QUERY)
+        query_2 = Query.generate_random()
         query_id_2 = query_2.save()
         query_2.delete()
 

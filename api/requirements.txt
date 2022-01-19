@@ -1,10 +1,14 @@
-python-dotenv
-pdoc3
 pytz
+pdoc3
+python-dotenv
+
 Flask
 flask_cors
 flask_jwt_extended
+
 sqlalchemy
+Faker
+
 googlemaps
 
 bs4

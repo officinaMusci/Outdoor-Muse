@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from random import randrange
 from typing import List
 
 from sqlalchemy import Column as ORMColumn
@@ -13,22 +14,11 @@ from sqlalchemy.orm import relationship
 
 from .location import Location
 from utils import time
+from utils.faker import faker
 from services import database
 
 
-TEST_PLACE = {
-	'name': 'Auf den Spuren von Alix',
-	'duration': '3:00:00',
-	'distance': 10500,
-	'difficulty': 1,
-	'location': {
-		'lat': 9.2754524816615,
-		'lng': 46.791814126484
-	},
-	'types': [
-		'hike'
-	]
-}
+TYPES = ['hike']
 
 
 class PlaceRow(database.Base):
@@ -73,9 +63,29 @@ class Place:
     distance:int=None
     types:List[str]=None
 
-    id:int=0
+    id:int=None
     created:datetime=None
     updated:datetime=None
+
+
+    @classmethod
+    def generate_random(cls):
+        '''Generates a random Query object'''
+        coordinates = faker.local_latlng(
+            country_code='CH'
+        )
+
+        return Place(
+            name=coordinates[2],
+            duration=timedelta(hours=randrange(4) + 1),
+            distance=(randrange(100) + 1) *  1000,
+            difficulty=randrange(4) + 1,
+            location=Location.from_dict({
+                'lat': coordinates[0],
+                'lng': coordinates[1]
+            }),
+            types=TYPES
+        )
 
 
     @classmethod
@@ -185,12 +195,12 @@ class Place:
         return False
     
 
-    def save(self):
+    def save(self) -> int:
         '''Save the Place in the database'''
         return self._update_row() or self._insert_row()
 
 
-    def delete(self):
+    def delete(self) -> bool:
         '''Delete the Place from the database'''
         return self._delete_row()
 
