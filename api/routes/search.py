@@ -1,7 +1,6 @@
 import flask
-import flask_jwt_extended as flask_jwt
 
-import app
+from utils import app
 from entities.query import Query
 from factories.solution_factory import SolutionFactory
 
@@ -14,7 +13,7 @@ blueprint = flask.Blueprint(
 
 
 @blueprint.route('/', methods=['POST'])
-@flask_jwt.jwt_required()
+@app.jwt_required()
 def execute():
     '''The API route to get query results.
     

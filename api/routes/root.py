@@ -2,7 +2,7 @@ import os
 
 import flask
 
-import app
+from utils import app
 
 
 blueprint = flask.Blueprint(

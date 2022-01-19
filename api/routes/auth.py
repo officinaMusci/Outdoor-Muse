@@ -1,6 +1,6 @@
 import flask
 
-import app
+from utils import app
 from entities.user import User
 
 

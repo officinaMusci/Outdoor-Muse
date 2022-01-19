@@ -212,6 +212,18 @@ class User:
             db_session.close()
         
         return user
+    
+    
+    @classmethod
+    def get_all(cls, filter_by:dict={}):
+        '''Returns all User objects from the database with optional filters'''
+        with database.create_session().begin() as db_session:
+            rows = db_session.query(UserRow).filter_by(**filter_by).all()
+            users = [User._from_row(row) for row in User._from_row(rows)]
+            
+            db_session.close()
+        
+        return users
 
 
     def check_password(self, password:str) -> bool:
