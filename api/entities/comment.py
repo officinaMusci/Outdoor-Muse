@@ -72,7 +72,7 @@ class Comment:
 
     @classmethod
     def generate_random(cls):
-        '''Generates a random Query object'''
+        '''Generates a random Comment object'''
         return Comment(
             content=faker.unique.sentence(nb_words=randrange(50) + 1)
         )

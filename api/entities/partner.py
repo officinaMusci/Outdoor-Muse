@@ -59,7 +59,7 @@ class Partner:
 
     @classmethod
     def generate_random(cls):
-        '''Generates a random Query object'''
+        '''Generates a random Partner object'''
         coordinates = faker.local_latlng(
             country_code='CH',
             coords_only=True

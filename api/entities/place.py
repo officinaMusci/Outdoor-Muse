@@ -70,7 +70,7 @@ class Place:
 
     @classmethod
     def generate_random(cls):
-        '''Generates a random Query object'''
+        '''Generates a random Place object'''
         coordinates = faker.local_latlng(
             country_code='CH'
         )
