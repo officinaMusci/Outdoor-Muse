@@ -39,7 +39,7 @@ class TestPlace(unittest.TestCase):
         place = Place.from_dict(TEST_PLACE)
         place_id = place.save()
 
-        place_2 = place.from_dict(TEST_PLACE)
+        place_2 = Place.from_dict(TEST_PLACE)
         place_id_2 = place_2.save()
 
         place_2.distance = 100000 
@@ -58,7 +58,7 @@ class TestPlace(unittest.TestCase):
         place = Place.from_dict(TEST_PLACE)
         place_id = place.save()
 
-        place_2 = place.from_dict(TEST_PLACE)
+        place_2 = Place.from_dict(TEST_PLACE)
         place_id_2 = place_2.save()
         place_2.delete()
 

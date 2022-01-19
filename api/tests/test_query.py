@@ -39,7 +39,7 @@ class TestQuery(unittest.TestCase):
         query = Query.from_dict(TEST_QUERY)
         query_id = query.save()
 
-        query_2 = query.from_dict(TEST_QUERY)
+        query_2 = Query.from_dict(TEST_QUERY)
         query_id_2 = query_2.save()
 
         query_2.radius = 100000
@@ -58,7 +58,7 @@ class TestQuery(unittest.TestCase):
         query = Query.from_dict(TEST_QUERY)
         query_id = query.save()
 
-        query_2 = query.from_dict(TEST_QUERY)
+        query_2 = Query.from_dict(TEST_QUERY)
         query_id_2 = query_2.save()
         query_2.delete()
 

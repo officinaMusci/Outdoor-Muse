@@ -6,6 +6,7 @@ from sqlalchemy import DateTime as ORMDateTime
 from sqlalchemy import Integer as ORMInteger
 from sqlalchemy import String as ORMString
 from sqlalchemy import Boolean as ORMBoolean
+from sqlalchemy.orm import relationship
 from werkzeug import security
 import flask_jwt_extended as flask_jwt
 
@@ -36,6 +37,8 @@ class UserRow(database.Base):
     confirmed = ORMColumn(ORMBoolean, default=False)
     role = ORMColumn(ORMString, default='user')
     points = ORMColumn(ORMInteger, default=0)
+
+    comments = relationship('CommentRow')
 
 
 @dataclass
@@ -73,9 +76,9 @@ class User:
         return User(
             id=dictionary['id']
                 if 'id' in dictionary else None,
-            created=dictionary['created']
+            created=time.localize_datetime(dictionary['created'])
                 if 'created' in dictionary else None,
-            updated=dictionary['updated']
+            updated=time.localize_datetime(dictionary['updated'])
                 if 'updated' in dictionary else None,
             username=dictionary['username'],
             password=dictionary['password'],

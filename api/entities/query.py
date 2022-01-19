@@ -102,6 +102,12 @@ class Query:
     def from_dict(cls, dictionary:dict):
         '''Creates and returns a Query object from a dictionary'''
         return Query(
+            id=dictionary['id']
+                if 'id' in dictionary else None,
+            created=time.localize_datetime(dictionary['created'])
+                if 'created' in dictionary else None,
+            updated=time.localize_datetime(dictionary['updated'])
+                if 'updated' in dictionary else None,
             location=Location.from_dict(dictionary['location']),
             interval=Interval.from_dict(dictionary['interval']),
             radius=dictionary['radius'],

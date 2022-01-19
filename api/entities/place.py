@@ -3,12 +3,13 @@ from datetime import datetime, timedelta
 from typing import List
 
 from sqlalchemy import Column as ORMColumn
-from sqlalchemy import String as ORMString
 from sqlalchemy import Integer as ORMInteger
+from sqlalchemy import String as ORMString
 from sqlalchemy import Float as ORMFloat
 from sqlalchemy import DateTime as ORMDateTime
 from sqlalchemy import Interval as ORMInterval
 from sqlalchemy import PickleType as ORMPickleType
+from sqlalchemy.orm import relationship
 
 from .location import Location
 from utils import time
@@ -45,6 +46,8 @@ class PlaceRow(database.Base):
     distance = ORMColumn(ORMInteger)
     types = ORMColumn(ORMPickleType)
 
+    comments = relationship('CommentRow', cascade='delete')
+
 
 @dataclass
 class Place:
@@ -63,8 +66,8 @@ class Place:
         distance: The distance covered during the average visit.
         types: The types the place belongs to.
     '''
-    location:Location
     name:str
+    location:Location
     difficulty:int=None
     duration:timedelta=None
     distance:int=None
@@ -79,12 +82,12 @@ class Place:
     def from_dict(cls, dictionary:dict):
         '''Creates and returns a Place object from a dictionary'''
         return Place(
+            name=dictionary['name'],
             location=Location.from_dict(
                 dictionary['location']
                 if 'location' in dictionary
                 else dictionary['geometry']['location'] # Google Places API
             ),
-            name=dictionary['name'],
             difficulty=dictionary['difficulty']
                 if 'difficulty' in dictionary else None,
             duration=time.str_to_delta(dictionary['duration'])
@@ -103,11 +106,11 @@ class Place:
             id=row.id,
             created=time.localize_datetime(row.created),
             updated=time.localize_datetime(row.updated),
+            name=row.name,
             location=Location(
                 lat=row.location_lat,
                 lng=row.location_lng
             ),
-            name=row.name,
             difficulty=row.difficulty,
             duration=row.duration,
             distance=row.distance,
@@ -118,9 +121,9 @@ class Place:
     def _to_row(self) -> PlaceRow:
         '''Returns a PlaceRow object obtained from a Place object'''
         return PlaceRow(
+            name=self.name,
             location_lat=self.location.lat,
             location_lng=self.location.lng,
-            name=self.name,
             difficulty=self.difficulty,
             duration=self.duration,
             distance=self.distance,
@@ -155,8 +158,8 @@ class Place:
                 place_row = db_session.query(PlaceRow).get(self.id)
 
                 place_row.updated = datetime.utcnow()
-                place_row.location = self.location
                 place_row.name = self.name
+                place_row.location = self.location
                 place_row.difficulty = self.difficulty
                 place_row.duration = self.duration
                 place_row.distance = self.distance
