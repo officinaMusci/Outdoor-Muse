@@ -126,4 +126,4 @@ class TestQuery(unittest.TestCase):
 
     def tearDown(self):
         '''Finalise the test removing the test database file'''
-        #self.delete_db()
+        self.delete_db()
