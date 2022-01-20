@@ -4,11 +4,11 @@ import unittest
 from entities.user import User
 from entities.place import Place
 from entities.partner import Partner
-from entities.comment import Comment
+from entities.review import Review
 
 
-class TestComment(unittest.TestCase):
-    '''Tests the Comment object'''
+class TestReview(unittest.TestCase):
+    '''Tests the Review object'''
 
     def delete_db(self):
         '''Delete test database file'''
@@ -16,7 +16,7 @@ class TestComment(unittest.TestCase):
             os.remove(self.db_path)
     
 
-    def create_comment_with_relations(self):
+    def create_review_with_relations(self):
         user = User.generate_random()
         user_id = user.save()
 
@@ -26,27 +26,27 @@ class TestComment(unittest.TestCase):
         partner = Partner.generate_random()
         partner_id = partner.save()
 
-        parent = Comment.generate_random()
+        parent = Review.generate_random()
         parent.user_id = user_id
         parent.place_id = place_id
         parent.partner_id = partner_id
         parent_id = parent.save()
 
-        comment = Comment.generate_random()
-        comment.user_id = user_id
-        comment.place_id = place_id
-        comment.partner_id = partner_id
-        comment.parent_id = parent_id
-        comment_id = comment.save()
+        review = Review.generate_random()
+        review.user_id = user_id
+        review.place_id = place_id
+        review.partner_id = partner_id
+        review.parent_id = parent_id
+        review_id = review.save()
 
-        return Comment.get_from_id(comment_id)
+        return Review.get_from_id(review_id)
 
 
     def setUp(self):
         '''Initialize the test'''
         self.db_path = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
-            'test_comment.sqlite'
+            'test_review.sqlite'
         )
 
         self.delete_db()
@@ -56,83 +56,83 @@ class TestComment(unittest.TestCase):
 
     def test_create(self):
         '''Tests the creation in the database'''
-        comment = Comment.generate_random()
-        comment_id = comment.save()
+        review = Review.generate_random()
+        review_id = review.save()
         
-        retrieved_comment = Comment.get_from_id(comment_id)
-        self.assertEqual(comment, retrieved_comment)
+        retrieved_review = Review.get_from_id(review_id)
+        self.assertEqual(review, retrieved_review)
 
 
     def test_relations(self):
         '''Tests the relations in the database'''
-        comment = self.create_comment_with_relations()
+        review = self.create_review_with_relations()
 
-        retrieved_user = User.get_from_id(comment.user_id)
+        retrieved_user = User.get_from_id(review.user_id)
         self.assertIsNotNone(retrieved_user)
 
-        retrieved_place = Place.get_from_id(comment.place_id)
+        retrieved_place = Place.get_from_id(review.place_id)
         self.assertIsNotNone(retrieved_place)
 
-        retrieved_partner = Partner.get_from_id(comment.partner_id)
+        retrieved_partner = Partner.get_from_id(review.partner_id)
         self.assertIsNotNone(retrieved_partner)
 
-        retrieved_parent = Comment.get_from_id(comment.parent_id)
+        retrieved_parent = Review.get_from_id(review.parent_id)
         self.assertIsNotNone(retrieved_parent)
 
-        # On user deletion, the comment should be anonymous
-        comment = self.create_comment_with_relations()
-        User.get_from_id(comment.user_id).delete()
-        self.assertIsNotNone(Comment.get_from_id(comment.id))
+        # On user deletion, the review should be anonymous
+        review = self.create_review_with_relations()
+        User.get_from_id(review.user_id).delete()
+        self.assertIsNotNone(Review.get_from_id(review.id))
 
-        # On place deletion, the comment should be deleted
-        comment = self.create_comment_with_relations()
-        Place.get_from_id(comment.place_id).delete()
-        self.assertIsNone(Comment.get_from_id(comment.id))
+        # On place deletion, the review should be deleted
+        review = self.create_review_with_relations()
+        Place.get_from_id(review.place_id).delete()
+        self.assertIsNone(Review.get_from_id(review.id))
         
-        # On partner deletion, the comment should be deleted
-        comment = self.create_comment_with_relations()
-        Partner.get_from_id(comment.partner_id).delete()
-        self.assertIsNone(Comment.get_from_id(comment.id))
+        # On partner deletion, the review should be deleted
+        review = self.create_review_with_relations()
+        Partner.get_from_id(review.partner_id).delete()
+        self.assertIsNone(Review.get_from_id(review.id))
         
-        # On parent deletion, the comment should be deleted
-        comment = self.create_comment_with_relations()
-        Comment.get_from_id(comment.parent_id).delete()
-        self.assertIsNone(Comment.get_from_id(comment.id))
+        # On parent deletion, the review should be deleted
+        review = self.create_review_with_relations()
+        Review.get_from_id(review.parent_id).delete()
+        self.assertIsNone(Review.get_from_id(review.id))
 
 
     def test_update(self):
         '''Tests the update in the database'''
-        comment = Comment.generate_random()
-        comment_id = comment.save()
+        review = Review.generate_random()
+        review_id = review.save()
 
-        comment_2 = Comment.generate_random()
-        comment_id_2 = comment_2.save()
+        review_2 = Review.generate_random()
+        review_id_2 = review_2.save()
 
-        comment_2.content = 'My comment 2'
-        comment_2.points = 1001
+        review_2.content = 'My review 2'
+        review_2.points = 1001
 
-        comment_2.save()
+        review_2.save()
 
-        retrieved_comment = Comment.get_from_id(comment_id)
-        retrieved_comment_2 = Comment.get_from_id(comment_id_2)
+        retrieved_review = Review.get_from_id(review_id)
+        retrieved_review_2 = Review.get_from_id(review_id_2)
 
-        self.assertNotEqual(retrieved_comment, retrieved_comment_2)
+        self.assertNotEqual(retrieved_review, retrieved_review_2)
 
 
     def test_delete(self):
         '''Tests the deletion from the database'''
-        comment = Comment.generate_random()
-        comment_id = comment.save()
+        review = Review.generate_random()
+        review_id = review.save()
 
-        comment_2 = Comment.generate_random()
-        comment_id_2 = comment_2.save()
-        comment_2.delete()
+        review_2 = Review.generate_random()
+        review_id_2 = review_2.save()
+        review_2.delete()
 
-        retrieved_comment = Comment.get_from_id(comment_id)
-        retrieved_comment_2 = Comment.get_from_id(comment_id_2)
+        retrieved_review = Review.get_from_id(review_id)
+        retrieved_review_2 = Review.get_from_id(review_id_2)
 
-        self.assertIsNotNone(retrieved_comment)
-        self.assertIsNone(retrieved_comment_2)
+        self.assertIsNotNone(retrieved_review)
+        self.assertIsNone(retrieved_review_2)
 
 
     def tearDown(self):

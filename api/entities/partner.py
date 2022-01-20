@@ -32,7 +32,7 @@ class PartnerRow(database.Base):
     types = ORMColumn(ORMPickleType, nullable=False)
 
     query_relations = relationship('QueryPartnerRow', cascade='delete')
-    comments = relationship('CommentRow', cascade='delete')
+    reviews = relationship('ReviewRow', cascade='delete')
 
 
 @dataclass

@@ -37,7 +37,7 @@ class PlaceRow(database.Base):
     types = ORMColumn(ORMPickleType)
 
     query_relations = relationship('QueryPlaceRow', cascade='delete')
-    comments = relationship('CommentRow', cascade='delete')
+    reviews = relationship('ReviewRow', cascade='delete')
 
 
 @dataclass

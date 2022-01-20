@@ -31,7 +31,7 @@ class UserRow(database.Base):
     points = ORMColumn(ORMInteger, default=0)
 
     queries = relationship('QueryRow')
-    comments = relationship('CommentRow')
+    reviews = relationship('ReviewRow')
 
 
 @dataclass
