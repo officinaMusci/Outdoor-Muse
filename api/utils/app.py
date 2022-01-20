@@ -6,7 +6,7 @@ import flask
 from entities.user import User
 
 
-def response(result=None, error=None):
+def response(results=[], error=None):
     '''Compose the standard app response.
     
     ARGS:
@@ -34,7 +34,7 @@ def response(result=None, error=None):
 
     return flask.make_response(
         flask.jsonify({
-            'result': result,
+            'results': results,
             'error': error
         }),
         code,

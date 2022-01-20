@@ -5,24 +5,31 @@ import flask_jwt_extended as flask_jwt
 import flask_cors
 from dotenv import load_dotenv
 
-from entities.user import User
 from routes import root, auth, search, users
 from utils.json_encoder import CustomJSONEncoder
 from utils.app import error
+
+
+# Avoid not found error
+from entities.user import User
+from entities.place import Place
+from entities.partner import Partner
+from entities.query import Query, QueryPlaceRow, QueryPartnerRow
+from entities.review import ReviewRow
 
 
 def create_app():
     '''The Flask app factory'''
     app = flask.Flask(__name__)
     
-    flask_jwt.JWTManager(app)
     flask_cors.CORS(app)
+    flask_jwt.JWTManager(app)
 
     load_dotenv()
     app.config.from_mapping(
         ENV=os.getenv('FLASK_ENV'),
         SECRET_KEY=os.getenv('SECRET_KEY'),
-        JWT_SECRET_KEY=os.getenv('JWT_SECRET_KEY'),
+        JWT_SECRET_KEY=os.getenv('JWT_SECRET_KEY')
     )
 
     app.json_encoder = CustomJSONEncoder

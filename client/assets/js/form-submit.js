@@ -189,7 +189,7 @@ $(document).ready(function () {
           'end': formatDatetime(data.date, data.timeTo)
       },
       'radius': parseInt(data.radius) * 1000,
-      'type': 'hike',
+      'types': ['hike'],
       'max_travel': formatTimedelta(data.maxTravel),
       'max_walk': formatTimedelta(data.maxWalk),
       'weather_ids': createWeatherIds(data),
@@ -201,7 +201,7 @@ $(document).ready(function () {
       $(".loading").show();
       $(".notLoading").hide();
       $.ajax({
-        url: 'http://127.0.0.1:5000/api/v1/execute-query',
+        url: 'http://127.0.0.1:5000/search/',
         type: "POST",
         contentType: 'application/json',
         data: JSON.stringify(json),
