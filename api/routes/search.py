@@ -13,7 +13,7 @@ blueprint = flask.Blueprint(
 
 
 @blueprint.route('/', methods=['POST'])
-@app.jwt_required()
+#@app.jwt_required()
 def execute():
     '''The API route to get query results.
     
