@@ -189,3 +189,14 @@ class Partner:
         
         return partner
         
+    
+    @classmethod
+    def get_all(cls, filter_by:dict={}):
+        '''Returns all Partner objects from the database with optional filters'''
+        with database.create_session().begin() as db_session:
+            rows = db_session.query(PartnerRow).filter_by(**filter_by).all()
+            partners = [Partner._from_row(row) for row in rows]
+            
+            db_session.close()
+        
+        return partners

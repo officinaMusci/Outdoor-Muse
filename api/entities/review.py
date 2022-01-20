@@ -78,7 +78,7 @@ class Review:
     def generate_random(cls):
         '''Generates a random Review object'''
         return Review(
-            comment=faker.unique.sentence(nb_words=randrange(50)),
+            comment=faker.sentence(nb_words=randrange(50)),
             rating=randint(1, 5)
         )
 
@@ -209,4 +209,14 @@ class Review:
         
         return review
 
+    
+    @classmethod
+    def get_all(cls, filter_by:dict={}):
+        '''Returns all Review objects from the database with optional filters'''
+        with database.create_session().begin() as db_session:
+            rows = db_session.query(ReviewRow).filter_by(**filter_by).all()
+            reviews = [Review._from_row(row) for row in rows]
+            
+            db_session.close()
         
+        return reviews

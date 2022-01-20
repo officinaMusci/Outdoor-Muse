@@ -220,7 +220,7 @@ class User:
         '''Returns all User objects from the database with optional filters'''
         with database.create_session().begin() as db_session:
             rows = db_session.query(UserRow).filter_by(**filter_by).all()
-            users = [User._from_row(row) for row in User._from_row(rows)]
+            users = [User._from_row(row) for row in rows]
             
             db_session.close()
         

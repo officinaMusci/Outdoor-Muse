@@ -24,7 +24,7 @@ from services import database, weather
 
 class QueryPlaceRow(database.Base):
     '''ORM association between queries and resulting places'''
-    __tablename__ = 'query_places'
+    __tablename__ = 'query_place_relation'
 
     id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
     
@@ -34,7 +34,7 @@ class QueryPlaceRow(database.Base):
 
 class QueryPartnerRow(database.Base):
     '''ORM association between queries and resulting partners'''
-    __tablename__ = 'query_partners'
+    __tablename__ = 'query_partner_relation'
 
     id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
     
@@ -303,6 +303,18 @@ class Query:
         
         return query
     
+
+    @classmethod
+    def get_all(cls, filter_by:dict={}):
+        '''Returns all Query objects from the database with optional filters'''
+        with database.create_session().begin() as db_session:
+            rows = db_session.query(QueryRow).filter_by(**filter_by).all()
+            queries = [Query._from_row(row) for row in rows]
+            
+            db_session.close()
+        
+        return queries
+
 
     def associate_place_row(self, place_id=int) -> int:
         '''Insert a QueryPlace association row in the database'''

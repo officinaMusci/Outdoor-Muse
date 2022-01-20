@@ -26,7 +26,7 @@ def create_session(engine=None):
     default_db_path = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
         '..',
-        'outdoor_muse.db'
+        'outdoor_muse.sqlite'
     )
 
     engine = create_engine(
