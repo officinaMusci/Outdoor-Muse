@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import List
 import random
-from random import randrange
+from random import randint, randrange
 
 from sqlalchemy import Column as ORMColumn
 from sqlalchemy import String as ORMString
@@ -11,6 +11,8 @@ from sqlalchemy import Float as ORMFloat
 from sqlalchemy import DateTime as ORMDateTime
 from sqlalchemy import Interval as ORMInterval
 from sqlalchemy import PickleType as ORMPickleType
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 
 from .location import Location
 from .interval import Interval
@@ -18,6 +20,26 @@ from .place import TYPES
 from utils import time
 from utils.faker import faker
 from services import database, weather
+
+
+class QueryPlaceRow(database.Base):
+    '''ORM association between queries and resulting places'''
+    __tablename__ = 'query_places'
+
+    id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
+    
+    query_id = ORMColumn(ForeignKey('query.id'), nullable=False)
+    place_id = ORMColumn(ForeignKey('place.id'), nullable=False)
+
+
+class QueryPartnerRow(database.Base):
+    '''ORM association between queries and resulting partners'''
+    __tablename__ = 'query_partners'
+
+    id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
+    
+    query_id = ORMColumn(ForeignKey('query.id'), nullable=False)
+    partner_id = ORMColumn(ForeignKey('partner.id'), nullable=False)
 
 
 class QueryRow(database.Base):
@@ -39,6 +61,11 @@ class QueryRow(database.Base):
     max_results = ORMColumn(ORMInteger)
     language = ORMColumn(ORMString)
 
+    user_id = ORMColumn(ORMInteger, ForeignKey('user.id'), nullable=True)
+
+    place_relations = relationship('QueryPlaceRow', cascade='delete')
+    partner_relations = relationship('QueryPartnerRow', cascade='delete')
+
 
 @dataclass
 class Query:
@@ -59,6 +86,7 @@ class Query:
         weather_ids: The forecasts accepted for the query.
         max_results: The maximum amount of results to get.
         language: The language to use in results.
+        user_id: The user id of the author.
     '''
     location:Location
     interval:Interval
@@ -69,6 +97,8 @@ class Query:
     weather_ids:List[int]
     max_results:int=10
     language:str=None
+    
+    user_id:int=None
 
     id:int=None
     created:datetime=None
@@ -78,7 +108,7 @@ class Query:
     @classmethod
     def generate_random(cls):
         '''Generates a random Query object'''
-        when = randrange(7) + 1
+        when = randrange(7)
 
         datetime_format = time.datetime_format()
         datetime_start = (
@@ -89,7 +119,7 @@ class Query:
             )
             + timedelta(days=when)
         )
-        datetime_end = datetime_start + timedelta(hours=randrange(8) + 1 - when)
+        datetime_end = datetime_start + timedelta(hours=randrange(8) - when)
 
         coordinates = faker.local_latlng(
             country_code='CH',
@@ -98,7 +128,7 @@ class Query:
 
         weather_ids = random.sample(
             [v[0] for k, v in weather.id_groups.items()],
-            randrange(len(weather.id_groups.keys())) + 1
+            randint(1, len(weather.id_groups.keys()))
         )
 
         return Query(
@@ -110,12 +140,13 @@ class Query:
                 'start': datetime_start.strftime(datetime_format),
                 'end': datetime_end.strftime(datetime_format)
             }),
-            radius=(randrange(100) + 1) *  1000,
+            radius=randint(1, 100) *  1000,
             types=TYPES,
-            max_travel=timedelta(hours=randrange(4) + 1),
+            max_travel=timedelta(hours=randint(1, 4)),
             max_walk=timedelta(hours=randrange(2) + .5),
             weather_ids=weather_ids,
             max_results=10,
+            user_id=None
         )
 
 
@@ -143,7 +174,9 @@ class Query:
             max_results=dictionary['max_results']
                 if 'max_results' in dictionary else cls.max_results,
             language=dictionary['language']
-                if 'language' in dictionary else cls.language
+                if 'language' in dictionary else cls.language,
+            user_id=dictionary['user_id']
+                if 'user_id' in dictionary else None
         )
 
 
@@ -168,7 +201,8 @@ class Query:
             max_walk=row.max_walk,
             weather_ids=row.weather_ids,
             max_results=row.max_results,
-            language=row.language
+            language=row.language,
+            user_id=row.user_id
         )
 
 
@@ -185,7 +219,8 @@ class Query:
             max_walk=self.max_walk,
             weather_ids=self.weather_ids,
             max_results=self.max_results,
-            language=self.language
+            language=self.language,
+            user_id=self.user_id
         )
 
 
@@ -209,7 +244,7 @@ class Query:
         return self.id
     
 
-    def _update_row(self) -> bool:
+    def _update_row(self) -> int:
         '''Update the Query row in the database'''
         if self.id:
             with database.create_session().begin() as db_session:
@@ -225,6 +260,7 @@ class Query:
                 query_row.weather_ids = self.weather_ids
                 query_row.max_results = self.max_results
                 query_row.language = self.language
+                query_row.user_id = self.user_id
 
                 db_session.flush()
                 
@@ -266,3 +302,73 @@ class Query:
             db_session.close()
         
         return query
+    
+
+    def associate_place_row(self, place_id=int) -> int:
+        '''Insert a QueryPlace association row in the database'''
+        query_place_row = QueryPlaceRow(
+            query_id=self.id,
+            place_id=place_id
+        )
+
+        with database.create_session().begin() as db_session:
+            db_session.add(query_place_row)
+            db_session.flush()
+            query_place_row_id = query_place_row.id
+
+        return query_place_row_id
+    
+
+    def associate_partner_row(self, partner_id=int) -> int:
+        '''Insert a QueryPartner association row in the database'''
+        query_partner_row = QueryPartnerRow(
+            query_id=self.id,
+            partner_id=partner_id
+        )
+
+        with database.create_session().begin() as db_session:
+            db_session.add(query_partner_row)
+            db_session.flush()
+            query_partner_row_id = query_partner_row.id
+
+        return query_partner_row_id
+    
+
+    def get_place_ids(self):
+        '''Get all the Place ids linked to the Query object'''
+        place_ids = []
+
+        if self.id:
+            with database.create_session().begin() as db_session:
+                query_place_rows = db_session.query(QueryPlaceRow).filter_by(
+                    query_id=self.id
+                ).all()
+
+                place_ids = [
+                    query_place_row.place_id
+                    for query_place_row in query_place_rows
+                ]
+                
+                db_session.close()
+        
+        return place_ids
+
+
+    def get_partner_ids(self):
+        '''Get all the Partner ids linked to the Query object'''
+        partner_ids = []
+
+        if self.id:
+            with database.create_session().begin() as db_session:
+                query_partner_rows = db_session.query(QueryPartnerRow).filter_by(
+                    query_id=self.id
+                ).all()
+
+                partner_ids = [
+                    query_partner_row.partner_id
+                    for query_partner_row in query_partner_rows
+                ]
+                
+                db_session.close()
+        
+        return partner_ids

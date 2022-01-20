@@ -18,7 +18,7 @@ class TestPartner(unittest.TestCase):
         '''Initialize the test'''
         self.db_path = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
-            'test_partner.db'
+            'test_partner.sqlite'
         )
 
         self.delete_db()

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from random import randrange
+from random import randint
 from typing import List
 
 from sqlalchemy import Column as ORMColumn
@@ -36,6 +36,7 @@ class PlaceRow(database.Base):
     distance = ORMColumn(ORMInteger)
     types = ORMColumn(ORMPickleType)
 
+    query_relations = relationship('QueryPlaceRow', cascade='delete')
     comments = relationship('CommentRow', cascade='delete')
 
 
@@ -77,9 +78,9 @@ class Place:
 
         return Place(
             name=coordinates[2],
-            duration=timedelta(hours=randrange(4) + 1),
-            distance=(randrange(100) + 1) *  1000,
-            difficulty=randrange(4) + 1,
+            duration=timedelta(hours=randint(1, 4)),
+            distance=randint(1, 100) *  1000,
+            difficulty=randint(1, 4),
             location=Location.from_dict({
                 'lat': coordinates[0],
                 'lng': coordinates[1]
@@ -161,7 +162,7 @@ class Place:
         return self.id
 
 
-    def _update_row(self) -> bool:
+    def _update_row(self) -> int:
         '''Update the Place row in the database'''
         if self.id:
             with database.create_session().begin() as db_session:

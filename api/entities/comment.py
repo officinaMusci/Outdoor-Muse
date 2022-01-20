@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from random import randrange
+from random import randint
 
 from sqlalchemy import Column as ORMColumn
 from sqlalchemy import DateTime as ORMDateTime
@@ -22,6 +22,7 @@ class CommentRow(database.Base):
     created = ORMColumn(ORMDateTime, default=datetime.utcnow)
     updated = ORMColumn(ORMDateTime, default=datetime.utcnow)
     content = ORMColumn(ORMString, nullable=False)
+    
     user_id = ORMColumn(ORMInteger, ForeignKey('user.id'), nullable=True)
     parent_id = ORMColumn(
         ORMInteger,
@@ -59,8 +60,8 @@ class Comment:
         place_id: The id of the place to which the comment refers.
     '''
     content:str
+
     user_id:int=None
-    
     parent_id:int=None
     partner_id:int=None
     place_id:int=None
@@ -74,7 +75,7 @@ class Comment:
     def generate_random(cls):
         '''Generates a random Comment object'''
         return Comment(
-            content=faker.unique.sentence(nb_words=randrange(50) + 1)
+            content=faker.unique.sentence(nb_words=randint(1, 50))
         )
 
 
@@ -89,7 +90,8 @@ class Comment:
             updated=time.localize_datetime(dictionary['updated'])
                 if 'updated' in dictionary else None,
             content=dictionary['content'],
-            user_id=dictionary['user_id'],
+            user_id=dictionary['user_id']
+                if 'user_id' in dictionary else None,
             parent_id=dictionary['parent_id']
                 if 'parent_id' in dictionary else 0,
             partner_id=dictionary['partner_id']
@@ -145,7 +147,7 @@ class Comment:
         return self.id
 
 
-    def _update_row(self) -> bool:
+    def _update_row(self) -> int:
         '''Update the Comment row in the database'''
         if self.id:
             with database.create_session().begin() as db_session:

@@ -30,6 +30,7 @@ class UserRow(database.Base):
     name = ORMColumn(ORMString, nullable=True)
     points = ORMColumn(ORMInteger, default=0)
 
+    queries = relationship('QueryRow')
     comments = relationship('CommentRow')
 
 
@@ -71,7 +72,7 @@ class User:
             confirmed=False,
             role='user',
             name=faker.unique.name(),
-            points=randrange(10000 + 1)
+            points=randrange(10000)
         )
 
 
@@ -153,7 +154,7 @@ class User:
         return self.id
 
 
-    def _update_row(self) -> bool:
+    def _update_row(self) -> int:
         '''Update the User row in the database'''
         if self.id:
             with database.create_session().begin() as db_session:

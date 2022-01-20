@@ -31,6 +31,7 @@ class PartnerRow(database.Base):
     location_lng = ORMColumn(ORMFloat, nullable=False)
     types = ORMColumn(ORMPickleType, nullable=False)
 
+    query_relations = relationship('QueryPartnerRow', cascade='delete')
     comments = relationship('CommentRow', cascade='delete')
 
 
@@ -137,7 +138,7 @@ class Partner:
         return self.id
 
 
-    def _update_row(self) -> bool:
+    def _update_row(self) -> int:
         '''Update the Partner row in the database'''
         if self.id:
             with database.create_session().begin() as db_session:
