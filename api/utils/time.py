@@ -1,6 +1,7 @@
 import os
 import re
 from datetime import datetime, timedelta
+from random import randrange
 
 import pytz
 from dotenv import load_dotenv
@@ -26,6 +27,7 @@ def str_to_datetime(string:str) -> datetime:
         datetime_format()
     ))
 
+
 def str_to_delta(string:str) -> timedelta:
     '''Converts a string to timedelta'''
     if 'day' in string:
@@ -45,3 +47,12 @@ def str_to_delta(string:str) -> timedelta:
     else:
         return timedelta(hours=time_dict['h'],
                          minutes=time_dict['m'], seconds=time_dict['s'])
+
+
+def random_datetime(start, end):
+    '''Generates a random datetime between two datetimes'''
+    delta = end - start
+    int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
+    random_second = randrange(int_delta) if int_delta else 0
+
+    return start + timedelta(seconds=random_second)

@@ -108,7 +108,7 @@ class Query:
     @classmethod
     def generate_random(cls):
         '''Generates a random Query object'''
-        when = randrange(7)
+        delta_days = randrange(7)
 
         datetime_format = time.datetime_format()
         datetime_start = (
@@ -117,9 +117,9 @@ class Query:
                 minute=0,
                 second=0
             )
-            + timedelta(days=when)
+            + timedelta(days=delta_days)
         )
-        datetime_end = datetime_start + timedelta(hours=randrange(8) - when)
+        datetime_end = datetime_start + timedelta(hours=randrange(8) - delta_days)
 
         coordinates = faker.local_latlng(
             country_code='CH',

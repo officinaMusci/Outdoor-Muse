@@ -1,9 +1,14 @@
+from datetime import datetime, timedelta,  timezone
 import random
+from random import randrange
+
 from entities.user import User
 from entities.place import Place
 from entities.partner import Partner
 from entities.query import Query
 from entities.review import Review
+
+from utils import time
 
 
 # Generate admin
@@ -34,7 +39,17 @@ partners = Partner.get_all()
 # Generate queries
 for user in users:
     for x in range(100):
+        query_datetime = time.random_datetime(
+            start=(
+                datetime.now(timezone.utc)
+                - timedelta(days=randrange(100))
+            ),
+            end=datetime.now(timezone.utc)
+        )
+
         query = Query.generate_random()
+        query.created = query_datetime
+        query.updated = query_datetime
         query.user_id = user.id
         query.save()
         query.associate_place_row(random.choice(places).id)
