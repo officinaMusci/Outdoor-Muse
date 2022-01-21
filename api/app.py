@@ -5,7 +5,7 @@ import flask_jwt_extended as flask_jwt
 import flask_cors
 from dotenv import load_dotenv
 
-from routes import root, auth, search, users
+from routes import root, auth, users, places, partners, queries, reviews, search
 from utils.json_encoder import CustomJSONEncoder
 from utils.app import error
 
@@ -37,7 +37,11 @@ def create_app():
     app.register_error_handler(Exception, error)
     app.register_blueprint(root.blueprint)
     app.register_blueprint(auth.blueprint)
-    app.register_blueprint(search.blueprint)
     app.register_blueprint(users.blueprint)
+    app.register_blueprint(places.blueprint)
+    app.register_blueprint(partners.blueprint)
+    app.register_blueprint(queries.blueprint)
+    app.register_blueprint(reviews.blueprint)
+    app.register_blueprint(search.blueprint)
 
     return app
