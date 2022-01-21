@@ -33,7 +33,7 @@ def get():
     elif flask.request.method == 'POST':
         partner = Partner.from_dict(request)
         partner.save()
-        return app.response([partner])
+        return app.response(partner)
 
 
 @blueprint.route('/<partner_id>', methods=['GET', 'DELETE', 'PUT'])

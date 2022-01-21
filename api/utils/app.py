@@ -6,11 +6,11 @@ import flask
 from entities.user import User
 
 
-def response(results=[], error=None):
+def response(result=[], error=None):
     '''Compose the standard app response.
     
     ARGS:
-        results: The results of the request.
+        result: The result of the request.
         error: The error given by the request.
     RETURNS:
         response: The JSON response.
@@ -34,7 +34,7 @@ def response(results=[], error=None):
 
     return flask.make_response(
         flask.jsonify({
-            'results': results,
+            'result': result,
             'error': error
         }),
         code,

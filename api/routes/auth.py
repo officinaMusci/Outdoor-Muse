@@ -32,6 +32,4 @@ def login():
     if not user:
         flask.abort(401)
     
-    return app.response({
-        'access_token': user.create_access_token()
-    })
+    return app.response(user.create_access_token())
