@@ -209,6 +209,9 @@ class Query:
     def _to_row(self) -> QueryRow:
         '''Returns a QueryRow object obtained from a Query object'''
         return QueryRow(
+            id=self.id,
+            created=self.created,
+            updated=self.updated,
             location_lat=self.location.lat,
             location_lng=self.location.lng,
             interval_start=self.interval.start,

@@ -111,6 +111,9 @@ class Partner:
     def _to_row(self) -> PartnerRow:
         '''Returns a PartnerRow object obtained from a Partner object'''
         return PartnerRow(
+            id=self.id,
+            created=self.created,
+            updated=self.updated,
             name=self.name,
             location_lat=self.location.lat,
             location_lng=self.location.lng,

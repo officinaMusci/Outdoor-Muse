@@ -132,6 +132,9 @@ class Place:
     def _to_row(self) -> PlaceRow:
         '''Returns a PlaceRow object obtained from a Place object'''
         return PlaceRow(
+            id=self.id,
+            created=self.created,
+            updated=self.updated,
             name=self.name,
             location_lat=self.location.lat,
             location_lng=self.location.lng,

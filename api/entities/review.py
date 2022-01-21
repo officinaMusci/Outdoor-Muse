@@ -126,6 +126,9 @@ class Review:
     def _to_row(self) -> ReviewRow:
         '''Returns a ReviewRow object obtained from a Review object'''
         return ReviewRow(
+            id=self.id,
+            created=self.created,
+            updated=self.updated,
             rating=self.rating,
             comment=self.comment,
             user_id=self.user_id,
