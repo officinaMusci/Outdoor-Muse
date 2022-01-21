@@ -19,13 +19,13 @@ def login():
         response: The JSON response containing the access token.
     
     RAISES:
-        400 response: Bad request if username or password are not been found.
+        400 response: Bad request if email or password are not been found.
         401 response: Unauthorized if the user has not been found.
     '''
-    request = app.get_request(required_keys=['username', 'password'])
+    request = app.get_request(required_keys=['email', 'password'])
 
     user = User.get_from_credentials(
-        username=request['username'],
+        email=request['email'],
         password=request['password']
     )
 

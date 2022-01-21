@@ -62,10 +62,12 @@ def get_request(required_keys:list=[]) -> dict:
         request: the JSON request.
     '''
     request = flask.request.get_json()
-    
+    request_keys = list(request.keys())
+    print(request_keys)
+
     if (
         len(required_keys)
-        and not all(k in request for k in required_keys)
+        and not all(k in request_keys for k in required_keys)
     ):
         flask.abort(400)
     

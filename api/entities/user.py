@@ -259,7 +259,7 @@ class User:
             user = User._from_row(user_row) if user_row else None
             db_session.close()
         
-        if user.check_password(password):
+        if user and user.check_password(password):
             return user
 
         return None
