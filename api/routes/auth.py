@@ -11,7 +11,7 @@ blueprint = flask.Blueprint(
 )
 
 
-@blueprint.route('/login')
+@blueprint.route('/login', methods=['POST'])
 def login():
     '''The API route to get do the login.
     
