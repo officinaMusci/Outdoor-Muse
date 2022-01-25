@@ -2,6 +2,7 @@ import traceback
 import functools
 
 import flask
+import flask_jwt_extended as flask_jwt
 
 from entities.user import User
 
@@ -61,9 +62,13 @@ def get_request(required_keys:list=[]) -> dict:
     RETURNS:
         request: the JSON request.
     '''
-    request = flask.request.get_json()
+    if flask.request.method == 'GET':
+        request = flask.request.args.to_dict()
+        
+    else:
+        request = flask.request.get_json()
+    
     request_keys = list(request.keys())
-    print(request_keys)
 
     if (
         len(required_keys)
@@ -79,13 +84,14 @@ def jwt_required(roles=[]):
     
     def decorator(route):
         @functools.wraps(route)
+        @flask_jwt.jwt_required()
         def wrapped_route(**kwargs):
             user = User.get_from_access_token()
 
             if not user:
                 flask.abort(401)
             
-            if len(roles) and user.role != roles:
+            if len(roles) and user.role not in roles:
                 flask.abort(403)
 
             if 'user' in kwargs.keys():
