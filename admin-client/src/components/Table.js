@@ -15,24 +15,26 @@ import {
 import {
   Add as CreateIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  Check as TrueIcon,
+  HourglassTop as FalseIcon
 } from '@mui/icons-material';
 import moment from 'moment';
 
 
 /**
  * Renders a button to create a new table row
- * @property  {CallableFunction}  handleCreate  The function to call on button click
+ * @property  {CallableFunction}  onCreate  The function to call on button click
  * @component
  */
 const TableCreateButton = props => {
   const {
-    handleCreate
+    onCreate
   } = props;
 
   return (
     <IconButton
-      onClick={handleCreate}
+      onClick={onCreate}
       sx={{
         fontSize: '1.5rem'
       }}
@@ -47,21 +49,21 @@ const TableCreateButton = props => {
  * Renders a button to edit or delete a table row
  * @property  {string}            type          The button type to render
  * @property  {integer}           rowId         The row id to which the button belongs
- * @property  {CallableFunction}  handleEdit    The function to call on edit button click
- * @property  {CallableFunction}  handleDelete  The function to call on delete button click
+ * @property  {CallableFunction}  onEdit    The function to call on edit button click
+ * @property  {CallableFunction}  onDelete  The function to call on delete button click
  * @component
  */
 const TableButton = props => {
   const {
     type,
     rowId,
-    handleEdit,
-    handleDelete
+    onEdit,
+    onDelete
   } = props;
 
   return type === 'edit' ?
     <IconButton
-      onClick={() => handleEdit(rowId)}
+      onClick={() => onEdit(rowId)}
       sx={{
         fontSize: '1.5rem'
       }}
@@ -71,7 +73,7 @@ const TableButton = props => {
     :
     type === 'delete' ?
       <IconButton
-        onClick={() => handleDelete(rowId)}
+        onClick={() => onDelete(rowId)}
       sx={{
         fontSize: '1.5rem'
       }}
@@ -88,9 +90,9 @@ const TableButton = props => {
  * Renders a table
  * @property  {Array}             columns       The table columns
  * @property  {Array}             rows          The table rows
- * @property  {CallableFunction}  handleCreate  The function to call on create button click
- * @property  {CallableFunction}  handleEdit    The function to call on edit button click
- * @property  {CallableFunction}  handleDelete  The function to call on delete button click
+ * @property  {CallableFunction}  onCreate  The function to call on create button click
+ * @property  {CallableFunction}  onEdit    The function to call on edit button click
+ * @property  {CallableFunction}  onDelete  The function to call on delete button click
  * @component
  */
 const Table = props => {
@@ -99,9 +101,9 @@ const Table = props => {
   const {
     columns,
     rows,
-    handleCreate,
-    handleEdit,
-    handleDelete
+    onCreate,
+    onEdit,
+    onDelete
   } = props;
 
   const [page, setPage] = useState(0);
@@ -130,6 +132,9 @@ const Table = props => {
       && moment(value).isValid()
     ) {
       value = moment(new Date(value)).format('DD.MM.YYYY HH:mm');
+    
+    } else if (typeof value === 'boolean') {
+      value = value ? <TrueIcon color='success' /> : <FalseIcon color='warning' />;
     }
 
     return value;
@@ -177,8 +182,8 @@ const Table = props => {
                             <TableButton
                               type={column.id}
                               rowId={row.id}
-                              handleEdit={handleEdit}
-                              handleDelete={handleDelete}
+                              onEdit={onEdit}
+                              onDelete={onDelete}
                             />
                             :
                             formatValue(value)
@@ -204,7 +209,7 @@ const Table = props => {
         }}
       >
         <TableCreateButton
-          handleCreate={handleCreate}
+          onCreate={onCreate}
         />
         <TablePagination
           rowsPerPageOptions={[25, 50, 100]}
@@ -213,7 +218,7 @@ const Table = props => {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-
+          component='div'
         />
       </Box>
     </Paper>
