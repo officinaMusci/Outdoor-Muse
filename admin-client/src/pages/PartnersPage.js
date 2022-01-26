@@ -207,7 +207,7 @@ export default function PartnersPage() {
           'GET'
         ).then(response => {
           if (!response.error) {
-            setRows(response);
+            setRows(response.result);
           }
         });
       }
