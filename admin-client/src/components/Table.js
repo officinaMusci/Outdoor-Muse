@@ -122,8 +122,15 @@ const Table = props => {
     setPage(0);
   };
 
-  const formatValue = value => {
-    if (Array.isArray(value)) {
+  const formatValue = (value, column) => {
+    if (column === 'distance') {
+      value = value / 100  + ' km';
+    
+    } else if (column === 'duration') {
+      value = value.split(':');
+      value = value.slice(0, 2).join(':')
+    
+    } else if (Array.isArray(value)) {
       value = value.join(', ');
       value = value.charAt(0).toUpperCase() + value.slice(1);
 
@@ -211,9 +218,9 @@ const Table = props => {
                           />
                           :
                           ['rating', 'average_rating'].includes(column.id) ?
-                            <Rating value={value} readOnly />
+                            <Rating value={value} precision={.5} readOnly />
                             :
-                            formatValue(value)
+                            formatValue(value, column.id)
                         }
                       </TableCell>
                     );
@@ -234,9 +241,13 @@ const Table = props => {
           flexWrap: 'wrap'
         }}
       >
-        <TableCreateButton
-          onCreate={onCreate}
-        />
+        {onCreate ?
+          <TableCreateButton
+            onCreate={onCreate}
+          />
+          :
+          <Box />
+        }
         <TablePagination
           rowsPerPageOptions={[25, 50, 100]}
           count={rows.length}
