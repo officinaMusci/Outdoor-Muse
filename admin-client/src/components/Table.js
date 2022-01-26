@@ -10,7 +10,8 @@ import {
   TableCell,
   TableBody,
   TablePagination,
-  IconButton
+  IconButton,
+  Skeleton
 } from '@mui/material';
 import {
   Add as CreateIcon,
@@ -47,8 +48,8 @@ const TableCreateButton = props => {
 
 /**
  * Renders a button to edit or delete a table row
- * @property  {string}            type          The button type to render
- * @property  {integer}           rowId         The row id to which the button belongs
+ * @property  {string}            type      The button type to render
+ * @property  {integer}           rowId     The row id to which the button belongs
  * @property  {CallableFunction}  onEdit    The function to call on edit button click
  * @property  {CallableFunction}  onDelete  The function to call on delete button click
  * @component
@@ -88,11 +89,12 @@ const TableButton = props => {
 
 /**
  * Renders a table
- * @property  {Array}             columns       The table columns
- * @property  {Array}             rows          The table rows
- * @property  {CallableFunction}  onCreate  The function to call on create button click
- * @property  {CallableFunction}  onEdit    The function to call on edit button click
- * @property  {CallableFunction}  onDelete  The function to call on delete button click
+ * @property  {Array}             columns    The table columns
+ * @property  {Array}             rows       The table rows
+ * @property  {CallableFunction}  onCreate   The function to call on create button click
+ * @property  {CallableFunction}  onEdit     The function to call on edit button click
+ * @property  {CallableFunction}  onDelete   The function to call on delete button click
+ * @property  {boolean}           isLoading  If the table is loading
  * @component
  */
 const Table = props => {
@@ -103,7 +105,8 @@ const Table = props => {
     rows,
     onCreate,
     onEdit,
-    onDelete
+    onDelete,
+    isLoading
   } = props;
 
   const [page, setPage] = useState(0);
@@ -164,39 +167,55 @@ const Table = props => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
+            {isLoading ?
+              Array(rowsPerPage).fill('').map((_, index) => (
+                <TableRow
+                  hover
+                  role='checkbox'
+                  tabIndex={-1}
+                  key={index}
+                >
+                  {columns.map(column => (
+                    <TableCell
+                      key={column.id}
+                    >
+                      <Skeleton animation='wave' />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+              :
+              rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow
-                    hover
-                    role='checkbox'
-                    tabIndex={-1}
-                    key={row.id}
-                  >
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                        >
-                          {['edit', 'delete'].includes(column.id) ?
-                            <TableButton
-                              type={column.id}
-                              rowId={row.id}
-                              onEdit={onEdit}
-                              onDelete={onDelete}
-                            />
-                            :
-                            formatValue(value)
-                          }
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+              .map(row => (
+                <TableRow
+                  hover
+                  role='checkbox'
+                  tabIndex={-1}
+                  key={row.id}
+                >
+                  {columns.map(column => {
+                    const value = row[column.id];
+                    return (
+                      <TableCell
+                        key={column.id}
+                        align={column.align}
+                      >
+                        {['edit', 'delete'].includes(column.id) ?
+                          <TableButton
+                            type={column.id}
+                            rowId={row.id}
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                          />
+                          :
+                          formatValue(value)
+                        }
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
           </TableBody>
         </MuiTable>
       </TableContainer>

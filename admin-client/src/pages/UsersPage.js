@@ -62,17 +62,20 @@ const roleList = [
 export default function UsersPage() {
   const { apiCall } = useApi();
 
+  const [isLoading, setIsLoading] = useState(true);
   const [rows, setRows] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [formData, setFormData] = useState(emptyFormData);
   const [formError, setFormError] = useState('');
 
   useEffect(() => {
+    setIsLoading(true);
     apiCall(
       `/${apiPath}`,
       'GET'
     )
       .then(response => {
+      setIsLoading(false);
         if (!response.error) {
           setRows(response.result);
         }
@@ -179,6 +182,7 @@ export default function UsersPage() {
         onCreate={handleTableCreate}
         onEdit={handleTableEdit}
         onDelete={handleTableDelete}
+        isLoading={isLoading}
       />
       <DialogForm
         open={dialogOpen}
