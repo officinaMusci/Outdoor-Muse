@@ -89,9 +89,17 @@ class Review:
         return Review(
             id=dictionary['id']
                 if 'id' in dictionary else None,
-            created=time.localize_datetime(dictionary['created'])
+            created=time.localize_datetime(
+                    time.str_to_datetime(dictionary['created'])
+                        if isinstance(dictionary['created'], str)
+                        else dictionary['created']
+                )
                 if 'created' in dictionary else None,
-            updated=time.localize_datetime(dictionary['updated'])
+            updated=time.localize_datetime(
+                    time.str_to_datetime(dictionary['updated'])
+                        if isinstance(dictionary['updated'], str)
+                        else dictionary['updated']
+                )
                 if 'updated' in dictionary else None,
             rating=dictionary['rating'],
             comment=dictionary['comment']

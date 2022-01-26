@@ -93,6 +93,20 @@ class Place:
     def from_dict(cls, dictionary:dict):
         '''Creates and returns a Place object from a dictionary'''
         return Place(
+            id=dictionary['id']
+                if 'id' in dictionary else None,
+            created=time.localize_datetime(
+                    time.str_to_datetime(dictionary['created'])
+                        if isinstance(dictionary['created'], str)
+                        else dictionary['created']
+                )
+                if 'created' in dictionary else None,
+            updated=time.localize_datetime(
+                    time.str_to_datetime(dictionary['updated'])
+                        if isinstance(dictionary['updated'], str)
+                        else dictionary['updated']
+                )
+                if 'updated' in dictionary else None,
             name=dictionary['name'],
             location=Location.from_dict(
                 dictionary['location']

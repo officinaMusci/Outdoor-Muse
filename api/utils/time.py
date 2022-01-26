@@ -17,7 +17,7 @@ def datetime_format() -> str:
 
 def localize_datetime(dt:datetime) -> datetime:
     '''Localize the datetime to the UTC'''
-    return pytz.utc.localize(dt)
+    return dt.replace(tzinfo=pytz.utc)
 
 
 def str_to_datetime(string:str) -> datetime:
