@@ -30,6 +30,8 @@ const tableColumns = [
   {id: 'name',  label: 'Nom'},
   {id: 'types',  label: 'Types'},
   {id: 'location',  label: 'Emplacement'},
+  {id: 'average_rating',  label: 'Évaluation (μ)'},
+  {id: 'query_count',  label: 'Apparitions'},
   
   {id: 'edit',  label: ''},
   {id: 'delete',  label: ''}

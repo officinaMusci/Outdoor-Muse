@@ -2,7 +2,8 @@ import os
 from random import randrange
 import unittest
 
-from entities.query import Query, QueryPlaceRow, QueryPartnerRow
+from entities.query import Query
+from entities.relations import QueryPlaceRow, QueryPartnerRow
 from entities.user import User
 from entities.place import Place
 from entities.partner import Partner

@@ -11,7 +11,8 @@ import {
   TableBody,
   TablePagination,
   IconButton,
-  Skeleton
+  Skeleton,
+  Rating
 } from '@mui/material';
 import {
   Add as CreateIcon,
@@ -209,7 +210,10 @@ const Table = props => {
                             onDelete={onDelete}
                           />
                           :
-                          formatValue(value)
+                          ['rating', 'average_rating'].includes(column.id) ?
+                            <Rating value={value} readOnly />
+                            :
+                            formatValue(value)
                         }
                       </TableCell>
                     );

@@ -14,7 +14,8 @@ from utils.app import error
 from entities.user import User
 from entities.place import Place
 from entities.partner import Partner
-from entities.query import Query, QueryPlaceRow, QueryPartnerRow
+from entities.query import Query
+from entities.relations import QueryPlaceRow, QueryPartnerRow
 from entities.review import ReviewRow
 
 

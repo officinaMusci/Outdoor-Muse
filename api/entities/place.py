@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from random import randint
+import statistics
 from typing import List
 
 from sqlalchemy import Column as ORMColumn
@@ -13,6 +14,8 @@ from sqlalchemy import PickleType as ORMPickleType
 from sqlalchemy.orm import relationship
 
 from .location import Location
+from .review import Review
+from .relations import QueryPlaceRow
 from utils import time
 from utils.faker import faker
 from services import database
@@ -56,6 +59,8 @@ class Place:
         duration: The duration of the average visit.
         distance: The distance covered during the average visit.
         types: The types the place belongs to.
+        average_rating: The average rating obtained from reviews.
+        query_count: The amount of query relations.
     '''
     name:str
     location:Location
@@ -64,9 +69,31 @@ class Place:
     distance:int=None
     types:List[str]=None
 
+    average_rating:int=0
+    query_count:int=0
+
     id:int=None
     created:datetime=None
     updated:datetime=None
+
+
+    def __post_init__(self):
+        '''Get additional data from database relations'''
+        reviews = Review.get_all(filter_by={'place_id': self.id})
+
+        self.average_rating = statistics.mean([
+            review.rating for review in reviews
+        ]) if reviews else 0
+
+        with database.create_session().begin() as db_session:
+            self.query_count = len(
+                db_session
+                .query(QueryPlaceRow)
+                .filter_by(place_id=self.id)
+                .all()
+            )
+            
+            db_session.close()
 
 
     @classmethod

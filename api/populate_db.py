@@ -61,6 +61,7 @@ for user in users:
         review = Review.generate_random()
         review.user_id = user.id
         review.place_id = random.choice(places).id
+        review.save()
 
 # Generate partner reviews
 for user in users:
@@ -68,3 +69,4 @@ for user in users:
         review = Review.generate_random()
         review.user_id = user.id
         review.partner_id = random.choice(partners).id
+        review.save()

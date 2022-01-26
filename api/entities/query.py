@@ -17,29 +17,10 @@ from sqlalchemy.orm import relationship
 from .location import Location
 from .interval import Interval
 from .place import TYPES
+from .relations import QueryPartnerRow, QueryPlaceRow
 from utils import time
 from utils.faker import faker
 from services import database, weather
-
-
-class QueryPlaceRow(database.Base):
-    '''ORM association between queries and resulting places'''
-    __tablename__ = 'query_place_relation'
-
-    id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
-    
-    query_id = ORMColumn(ForeignKey('query.id'), nullable=False)
-    place_id = ORMColumn(ForeignKey('place.id'), nullable=False)
-
-
-class QueryPartnerRow(database.Base):
-    '''ORM association between queries and resulting partners'''
-    __tablename__ = 'query_partner_relation'
-
-    id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
-    
-    query_id = ORMColumn(ForeignKey('query.id'), nullable=False)
-    partner_id = ORMColumn(ForeignKey('partner.id'), nullable=False)
 
 
 class QueryRow(database.Base):

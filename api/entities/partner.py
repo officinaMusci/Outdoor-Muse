@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 import random
+import statistics
 
 from sqlalchemy import Column as ORMColumn
 from sqlalchemy import DateTime as ORMDateTime
@@ -12,6 +13,8 @@ from sqlalchemy.orm import relationship
 
 from services import database
 from .location import Location
+from .review import Review
+from .relations import QueryPartnerRow
 from utils import time
 from utils.faker import faker
 
@@ -52,14 +55,38 @@ class Partner:
         name: The partner name.
         location: The partner location.
         types: The types the partner belongs to.
+        average_rating: The average rating obtained from reviews.
+        query_count: The amount of query relations.
     '''
     name:str
     location:Location
     types:str
 
+    average_rating:int=0
+    query_count:int=0
+
     id:int=None
     created:datetime=None
     updated:datetime=None
+
+
+    def __post_init__(self):
+        '''Get additional data from database relations'''
+        reviews = Review.get_all(filter_by={'partner_id': self.id})
+
+        self.average_rating = statistics.mean([
+            review.rating for review in reviews
+        ]) if reviews else 0
+
+        with database.create_session().begin() as db_session:
+            self.query_count = len(
+                db_session
+                .query(QueryPartnerRow)
+                .filter_by(partner_id=self.id)
+                .all()
+            )
+            
+            db_session.close()
 
 
     @classmethod
