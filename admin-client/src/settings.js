@@ -8,6 +8,7 @@ import {
   Store as PartnersIcon,
   Flag as ReportsIcon,
 } from '@mui/icons-material';
+import { frFR } from '@mui/material/locale';
 
 import HomePage from './pages/HomePage';
 import StatsPage from './pages/StatsPage';
@@ -65,4 +66,4 @@ export const theme = createTheme({
       breakPoint: 'lg'
     }
   }
-});
+}, frFR);

@@ -114,12 +114,12 @@ export default function LoginPage() {
             mt: 1
           }}
         >
-          Login
+          Connexion
         </Typography>
         <TextField
           value={email}
           onInput={handleEmailChange}
-          label='E-mail'
+          label='Adresse e-mail'
           error={error}
           sx={inputStyle}
         />
@@ -130,7 +130,7 @@ export default function LoginPage() {
           <InputLabel
             htmlFor='password-input'
           >
-            Password
+            Mot de passe
           </InputLabel>
           <OutlinedInput
             id='password-input'
@@ -159,7 +159,7 @@ export default function LoginPage() {
               mt: 3
             }}
           >
-            La combinaison de l’ID utilisateur
+            La combinaison de l’adresse e-mail
             et le mot de passe entré n’est pas valide
           </Alert>
           :
@@ -170,7 +170,7 @@ export default function LoginPage() {
           type='submit'
           sx={inputStyle}
         >
-          Login
+          Accéder
         </Button>
       </Paper>
     </Box>
