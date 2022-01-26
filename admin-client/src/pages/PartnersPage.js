@@ -3,160 +3,11 @@ import {
   useEffect
 } from 'react';
 import {
-  Paper,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  TablePagination,
-  IconButton
+  Paper
 } from '@mui/material';
-import {
-  Edit as EditIcon,
-  Delete as DeleteIcon
-} from '@mui/icons-material';
-import moment from 'moment';
 
 import useApi from '../services/apiHook';
-
-
-/**
- * 
- * @component
- */
-const TableButton = props => {
-  const {
-    type,
-    rowId,
-    handleEdit,
-    handleDelete
-  } = props;
-
-  return type === 'edit' ?
-    <IconButton onClick={() => handleEdit(rowId)}>
-      <EditIcon />
-    </IconButton>
-    :
-    type === 'delete' ?
-      <IconButton onClick={() => handleDelete(rowId)}>
-        <DeleteIcon />
-      </IconButton>
-      :
-      null
-  ;
-}
-
-
-/**
- * 
- * @component
- */
-const PartnersTable = props => {
-  const {
-    columns,
-    rows,
-    handleEdit,
-    handleDelete
-  } = props;
-
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
-  const formatValue = value => {
-    if (Array.isArray(value)) {
-      value = value.join(', ');
-      value = value.charAt(0).toUpperCase() + value.slice(1);
-      
-    } else if (typeof value === 'object') {
-      value = 'lat ' + value.lat + ', lng ' + value.lng;
-
-    } else if (
-      value
-      && typeof value !== 'number'
-      && moment(value).isValid()
-    ) {
-      value = moment(new Date(value)).format('DD.MM.YYYY HH:mm');
-    }
-
-    return value;
-  }
-
-  return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer sx={{ maxHeight: '80vh' }}>
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow
-                    hover
-                    role='checkbox'
-                    tabIndex={-1}
-                    key={row.id}
-                  >
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                        >
-                          {['edit', 'delete'].includes(column.id) ?
-                              <TableButton
-                                type={column.id}
-                                rowId={row.id}
-                                handleEdit={handleEdit}
-                                handleDelete={handleDelete}
-                              />
-                              :
-                              formatValue(value)
-                          }
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[25, 50, 100]}
-        component='div'
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Paper>
-  );
-}
+import Table from '../components/Table';
 
 
 /**
@@ -192,6 +43,10 @@ export default function PartnersPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleCreate = () => {
+
+  }
+
   const handleEdit = id => {
 
   }
@@ -200,12 +55,14 @@ export default function PartnersPage() {
     apiCall(
       '/partners/' + id,
       'DELETE'
-    ).then(response => {
+    )
+    .then(response => {
       if (!response.error) {
         apiCall(
           '/partners',
           'GET'
-        ).then(response => {
+        )
+        .then(response => {
           if (!response.error) {
             setRows(response.result);
           }
@@ -216,9 +73,10 @@ export default function PartnersPage() {
 
   return (
     <Paper>
-      <PartnersTable
+      <Table
         columns={columns}
         rows={rows}
+        handleCreate={handleCreate}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
       />
