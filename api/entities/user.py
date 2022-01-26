@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+import random
 from random import randrange
 
 from sqlalchemy import Column as ORMColumn
@@ -69,7 +70,7 @@ class User:
         return User(
             email=faker.unique.email(),
             password=faker.password(),
-            confirmed=False,
+            confirmed=bool(random.getrandbits(1)),
             role='user',
             name=faker.unique.name(),
             points=randrange(10000)
