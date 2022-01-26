@@ -16,7 +16,11 @@ from utils import time
 from utils.faker import faker
 
 
-TYPES = ['restaurant']
+TYPES = [
+    'restaurant',
+    'hotel',
+    'bar'
+]
 
 
 class PartnerRow(database.Base):
