@@ -1,4 +1,8 @@
-import * as React from 'react';
+import {
+  forwardRef,
+  useContext,
+  useState
+} from 'react';
 import {
   Link as RouterLink,
   useLocation,
@@ -25,11 +29,11 @@ import {
 } from '@mui/icons-material';
 
 import { routes } from '../settings';
-import { AuthConsumer } from '../services/Auth';
+import { AuthContext } from '../services/authContext';
 
 
 // Override the default MUI link behaviour with the Router one.
-const LinkBehaviour = React.forwardRef((props, ref) => (
+const LinkBehaviour = forwardRef((props, ref) => (
   <RouterLink
     ref={ref}
     {...props}
@@ -53,75 +57,71 @@ const MenuList = props => {
   } = props;
 
   return (
-    <AuthConsumer>
-      {([, setIsAuthenticated]) => (
-        <>
-          <AppBar position='static'>
-            <Toolbar disableGutters>
-              <IconButton
-                size='large'
-                onClick={handleDrawerToggle}
-                color='inherit'
-                sx={{
-                  ml: .5,
-                  mr: 1.75,
-                  display: {
-                    fontSize: '.1rem',
-                    xs: 'block',
-                    [theme.custom.appFrame.breakPoint]: 'none'
-                  }
-                }}
-              >
-                <CloseIcon />
-              </IconButton>
-              <Typography
-                variant='h6'
-                sx={{
-                  ml: {
-                    [theme.custom.appFrame.breakPoint]: 2.5
-                  }
-                }}
-              >
-                {theme.custom.appFrame.title}
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          <List>
-            {routes.map((route, index) => (
-              <ListItem
-                button
-                key={index}
-                component={LinkBehaviour}
-                onClick={handleDrawerToggle}
-                to={route.path}
-                selected={(
-                    route.path === location.pathname
-                    || (route.path === '/' && !location.pathname)
-                  )}
-                >
-                <ListItemIcon>
-                  {route.icon ? route.icon : null}
-                </ListItemIcon>
-                <ListItemText>{route.label}</ListItemText>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            <ListItem
-              button
-              key={routes.length}
-              onClick={() => handleLogoutClick(setIsAuthenticated)}
+    <>
+      <AppBar position='static'>
+        <Toolbar disableGutters>
+          <IconButton
+            size='large'
+            onClick={handleDrawerToggle}
+            color='inherit'
+            sx={{
+              ml: .5,
+              mr: 1.75,
+              display: {
+                fontSize: '.1rem',
+                xs: 'block',
+                [theme.custom.appFrame.breakPoint]: 'none'
+              }
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography
+            variant='h6'
+            sx={{
+              ml: {
+                [theme.custom.appFrame.breakPoint]: 2.5
+              }
+            }}
+          >
+            {theme.custom.appFrame.title}
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <List>
+        {routes.map((route, index) => (
+          <ListItem
+            button
+            key={index}
+            component={LinkBehaviour}
+            onClick={handleDrawerToggle}
+            to={route.path}
+            selected={(
+                route.path === location.pathname
+                || (route.path === '/' && !location.pathname)
+              )}
             >
-              <ListItemIcon>
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText>Logout</ListItemText>
-            </ListItem>
-          </List>
-        </>
-      )}
-    </AuthConsumer>
+            <ListItemIcon>
+              {route.icon ? route.icon : null}
+            </ListItemIcon>
+            <ListItemText>{route.label}</ListItemText>
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <List>
+        <ListItem
+          button
+          key={routes.length}
+          onClick={() => handleLogoutClick()}
+        >
+          <ListItemIcon>
+            <LogoutIcon />
+          </ListItemIcon>
+          <ListItemText>Logout</ListItemText>
+        </ListItem>
+      </List>
+    </>
   );
 }
 
@@ -197,6 +197,7 @@ const Drawers = props => {
  * @component
  */
 export default function AppFrame(props) {
+  const [isAuthenticated, setIsAuthenticated] = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -217,126 +218,122 @@ export default function AppFrame(props) {
       :
       '';
 
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleLogoutClick = setIsAuthenticated => {
+  const handleLogoutClick = () => {
     setIsAuthenticated(false);
     setMobileOpen(false);
     navigate('/login');
   }
 
   return (
-    <AuthConsumer>
-      {([isAuthenticated, ]) => (
-        <>
-          <AppBar
-            position='sticky'
-            sx={isAuthenticated ?
-              {
-                width: {
-                  [theme.custom.appFrame.breakPoint]: `calc(100% - ${theme.custom.appFrame.drawerWidth}px)`
-                },
-                ml: {
-                  [theme.custom.appFrame.breakPoint]: `${theme.custom.appFrame.drawerWidth}px`
-                },
-              }
-              :
-              {}
-            }
-          >
-            <Toolbar disableGutters>
-              {isAuthenticated ?
-                <>
-                  <IconButton
-                    size='large'
-                    aria-haspopup='true'
-                    onClick={handleDrawerToggle}
-                    color='inherit'
-                    sx={{
-                      ml: .5,
-                      mr: 1.75,
-                      display: {
-                        fontSize: '.1rem',
-                        xs: 'block',
-                        [theme.custom.appFrame.breakPoint]: 'none'
-                      }
-                    }}
-                  >
-                    <MenuIcon />
-                  </IconButton>
-                  <Drawers
-                    mobileOpen={mobileOpen}
-                    handleDrawerToggle={handleDrawerToggle}
-                  >
-                    <MenuList
-                      handleDrawerToggle={handleDrawerToggle}
-                      handleLogoutClick={handleLogoutClick}
-                    />
-                  </Drawers>
-                </>
-                :
-                <Typography
-                  variant='h6'
-                  sx={{
-                    m: 'auto'
-                  }}
-                >
-                  {theme.custom.appFrame.title}
-                </Typography>
-              }
-              <Typography
-                variant='h6'
+    <>
+      <AppBar
+        position='sticky'
+        sx={isAuthenticated ?
+          {
+            width: {
+              [theme.custom.appFrame.breakPoint]: `calc(100% - ${theme.custom.appFrame.drawerWidth}px)`
+            },
+            ml: {
+              [theme.custom.appFrame.breakPoint]: `${theme.custom.appFrame.drawerWidth}px`
+            },
+          }
+          :
+          {}
+        }
+      >
+        <Toolbar disableGutters>
+          {isAuthenticated ?
+            <>
+              <IconButton
+                size='large'
+                aria-haspopup='true'
+                onClick={handleDrawerToggle}
+                color='inherit'
                 sx={{
-                  mr: currentPage ? .5 : undefined,
+                  ml: .5,
+                  mr: 1.75,
                   display: {
+                    fontSize: '.1rem',
                     xs: 'block',
                     [theme.custom.appFrame.breakPoint]: 'none'
                   }
                 }}
               >
-                {theme.custom.appFrame.title}
-                {currentPage ? ' /' : ''}
-              </Typography>
-              {currentPage && currentPageLabel ?
-                <Typography
-                  variant='h6'
-                  sx={{
-                    ml: {
-                      [theme.custom.appFrame.breakPoint]: 3
-                    }
-                  }}
-                >
-                  {currentPageLabel}
-                </Typography>
-                :
-                null
+                <MenuIcon />
+              </IconButton>
+              <Drawers
+                mobileOpen={mobileOpen}
+                handleDrawerToggle={handleDrawerToggle}
+              >
+                <MenuList
+                  handleDrawerToggle={handleDrawerToggle}
+                  handleLogoutClick={handleLogoutClick}
+                />
+              </Drawers>
+            </>
+            :
+            <Typography
+              variant='h6'
+              sx={{
+                m: 'auto'
+              }}
+            >
+              {theme.custom.appFrame.title}
+            </Typography>
+          }
+          <Typography
+            variant='h6'
+            sx={{
+              mr: currentPage ? .5 : undefined,
+              display: {
+                xs: 'block',
+                [theme.custom.appFrame.breakPoint]: 'none'
               }
-            </Toolbar>
-          </AppBar>
-          <Container
-            sx={isAuthenticated ?
-              {
-                width: {
-                  [theme.custom.appFrame.breakPoint]: `calc(100% - ${theme.custom.appFrame.drawerWidth}px)`
-                },
-                maxWidth: '100% !important',
-                mt: 3,
-                ml: {
-                  [theme.custom.appFrame.breakPoint]: `${theme.custom.appFrame.drawerWidth}px`
-                },
-              }
-              :
-              {}
-            }
+            }}
           >
-            {children}
-          </Container>
-        </>
-      )}
-    </AuthConsumer>
+            {theme.custom.appFrame.title}
+            {currentPage ? ' /' : ''}
+          </Typography>
+          {currentPage && currentPageLabel ?
+            <Typography
+              variant='h6'
+              sx={{
+                ml: {
+                  [theme.custom.appFrame.breakPoint]: 3
+                }
+              }}
+            >
+              {currentPageLabel}
+            </Typography>
+            :
+            null
+          }
+        </Toolbar>
+      </AppBar>
+      <Container
+        sx={isAuthenticated ?
+          {
+            width: {
+              [theme.custom.appFrame.breakPoint]: `calc(100% - ${theme.custom.appFrame.drawerWidth}px)`
+            },
+            maxWidth: '100% !important',
+            mt: 3,
+            ml: {
+              [theme.custom.appFrame.breakPoint]: `${theme.custom.appFrame.drawerWidth}px`
+            },
+          }
+          :
+          {}
+        }
+      >
+        {children}
+      </Container>
+    </>
   );
 };

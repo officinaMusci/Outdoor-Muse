@@ -18,8 +18,8 @@ import {
   Visibility
 } from '@mui/icons-material';
 
-import useApi from '../services/Api';
-import { AuthConsumer } from '../services/Auth';
+import useApi from '../services/apiHook';
+import { AuthContext } from '../services/authContext';
 
 
 /**
@@ -27,7 +27,8 @@ import { AuthConsumer } from '../services/Auth';
  * @component
  */
 export default function LoginPage() {
-  const navigate = useNavigate()
+  const [, setIsAuthenticated] = useContext(AuthContext);
+  const navigate = useNavigate();
   const { apiCall } = useApi();
 
   const [email, setEmail] = useState('admin@test.test');
@@ -53,19 +54,23 @@ export default function LoginPage() {
     event.preventDefault();
   }
 
-  const handleSubmit = async setIsAuthenticated => {
-    let response = await apiCall(
+  const handleSubmit = () => {
+    apiCall(
       '/auth/login',
       'POST',
       { email, password }
-    );
-
-    if (response) {
-      await setIsAuthenticated(response);
-      navigate('/');
-    } else {
-      setError(true);
-    }
+    )
+    .then(response => {
+      if (!response.error) {
+        setIsAuthenticated(response.result)
+        .then(() => {
+          navigate('/');
+        });
+        
+      } else {
+        setError(true);
+      }
+    });
   }
 
   const inputStyle = {
@@ -74,101 +79,97 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthConsumer>
-      {([, setIsAuthenticated]) => (
-        <Box
-          component='form'
+    <Box
+      component='form'
+      sx={{
+        mt: 4,
+        display: 'flex',
+        justifyContent: 'center',
+        '& > :not(style)': {
+          m: 1,
+          maxWidth: '25ch'
+        },
+      }}
+      noValidate
+      autoComplete='off'
+      onSubmit={e => {
+        e.preventDefault();
+        handleSubmit();
+      }}
+    >
+      <Paper
+        elevation={5}
+        sx={{
+          p: 2
+        }}
+      >
+        <Typography
+          variant='h5'
+          component='h2'
+          textAlign='center'
           sx={{
-            mt: 4,
-            display: 'flex',
-            justifyContent: 'center',
-            '& > :not(style)': {
-              m: 1,
-              maxWidth: '25ch'
-            },
-          }}
-          noValidate
-          autoComplete='off'
-          onSubmit={e => {
-            e.preventDefault();
-            handleSubmit(setIsAuthenticated);
+            mt: 1
           }}
         >
-          <Paper
-            elevation={5}
+          Login
+        </Typography>
+        <TextField
+          value={email}
+          onInput={handleEmailChange}
+          label='E-mail'
+          error={error}
+          sx={inputStyle}
+        />
+        <FormControl
+          error={error}
+          sx={inputStyle}
+        >
+          <InputLabel
+            htmlFor='password-input'
+          >
+            Password
+          </InputLabel>
+          <OutlinedInput
+            id='password-input'
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onInput={handlePasswordChange}
+            endAdornment={
+              <InputAdornment position='end'>
+                <IconButton
+                  aria-label='toggle password visibility'
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge='end'
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+            label='Password'
+          />
+        </FormControl>
+        {error ?
+          <Alert
+            severity='error'
             sx={{
-              p: 2
+              mt: 3
             }}
           >
-            <Typography
-              variant='h5'
-              component='h2'
-              textAlign='center'
-              sx={{
-                mt: 1
-              }}
-            >
-              Login
-            </Typography>
-            <TextField
-              value={email}
-              onInput={handleEmailChange}
-              label='E-mail'
-              error={error}
-              sx={inputStyle}
-            />
-            <FormControl
-              error={error}
-              sx={inputStyle}
-            >
-              <InputLabel
-                htmlFor='password-input'
-              >
-                Password
-              </InputLabel>
-              <OutlinedInput
-                id='password-input'
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onInput={handlePasswordChange}
-                endAdornment={
-                  <InputAdornment position='end'>
-                    <IconButton
-                      aria-label='toggle password visibility'
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge='end'
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label='Password'
-              />
-            </FormControl>
-            {error ?
-              <Alert
-                severity='error'
-                sx={{
-                  mt: 3
-                }}
-              >
-                La combinaison de l’ID utilisateur
-                et le mot de passe entré n’est pas valide
-              </Alert>
-              :
-              null
-            }
-            <Button
-              variant='contained'
-              type='submit'
-              sx={inputStyle}
-            >
-              Login
-            </Button>
-          </Paper>
-        </Box>
-      )}
-    </AuthConsumer>
+            La combinaison de l’ID utilisateur
+            et le mot de passe entré n’est pas valide
+          </Alert>
+          :
+          null
+        }
+        <Button
+          variant='contained'
+          type='submit'
+          sx={inputStyle}
+        >
+          Login
+        </Button>
+      </Paper>
+    </Box>
   );
 }

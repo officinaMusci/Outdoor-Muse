@@ -3,6 +3,8 @@ import {
     useState
 } from 'react';
 
+import { tokenName } from '../settings';
+
 
 // The Auth context to handle the logged in status for the user.
 export const AuthContext = createContext();
@@ -13,7 +15,7 @@ export const AuthContext = createContext();
  * @component
  */
 export const AuthProvider = props => {
-    const token = sessionStorage.getItem('outdoor_muse_jwt');
+    const token = sessionStorage.getItem(tokenName);
 
     const [isAuthenticated, setIsAuthenticated] = useState(!!token);
 
@@ -21,11 +23,11 @@ export const AuthProvider = props => {
         state = await state;
 
         if (typeof state === 'string') {
-            sessionStorage.setItem('outdoor_muse_jwt', state);
+            sessionStorage.setItem(tokenName, state);
             setIsAuthenticated(true);
 
         } else {
-            sessionStorage.removeItem('outdoor_muse_jwt');
+            sessionStorage.removeItem(tokenName);
             setIsAuthenticated(false);
         }
     }

@@ -16,6 +16,10 @@ import PartnersPage from './pages/PartnersPage';
 import ReportsPage from './pages/ReportsPage';
 
 
+// The token name
+export const tokenName = 'outdoor_muse_jwt';
+
+
 // The routes of the app
 export const routes = [
   {

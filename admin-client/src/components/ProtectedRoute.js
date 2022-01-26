@@ -1,9 +1,9 @@
-import * as React from 'react';
+import { useContext } from 'react';
 import {
   Navigate,
   Outlet
 } from 'react-router-dom';
-import { AuthConsumer } from '../services/Auth';
+import { AuthContext } from '../services/authContext';
 
 
 /**
@@ -14,12 +14,11 @@ export default function ProtectedRoute({
   component: Component,
   ...restOfProps
 }) {
-  return (
-    <AuthConsumer>
-      {([isAuthenticated, ]) => isAuthenticated ?
-        <Outlet />
-        :
-        <Navigate to='/login' />}
-    </AuthConsumer>
-  )
+  const [isAuthenticated, ] = useContext(AuthContext);
+
+  return isAuthenticated ?
+    <Outlet />
+    :
+    <Navigate to='/login' />
+  ;
 }

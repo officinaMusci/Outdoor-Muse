@@ -19,7 +19,7 @@ import {
 } from '@mui/icons-material';
 import moment from 'moment';
 
-import useApi from '../services/Api';
+import useApi from '../services/apiHook';
 
 
 /**
@@ -179,32 +179,39 @@ export default function PartnersPage() {
     {id: 'delete',  label: 'Supprimer'}
   ];
 
-  useEffect(async () => {
-    let response = await apiCall(
+  useEffect(() => {
+    apiCall(
       '/partners',
       'GET'
-    );
-    setRows(response);
+    )
+    .then(response => {
+      if (!response.error) {
+        setRows(response.result);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleEdit = async id => {
+  const handleEdit = id => {
 
   }
 
-  const handleDelete = async id => {
-    let hasDeleted = await apiCall(
+  const handleDelete = id => {
+    apiCall(
       '/partners/' + id,
       'DELETE'
-    );
-
-    if (hasDeleted) {
-      let response = await apiCall(
-        '/partners',
-        'GET'
-      );
-
-      setRows(response);
-    }
+    ).then(response => {
+      if (!response.error) {
+        apiCall(
+          '/partners',
+          'GET'
+        ).then(response => {
+          if (!response.error) {
+            setRows(response);
+          }
+        });
+      }
+    });
   }
 
   return (

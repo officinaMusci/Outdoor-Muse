@@ -1,4 +1,8 @@
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import { AuthContext } from './authContext';
+import { tokenName } from '../settings';
 
 
 /**
@@ -6,19 +10,8 @@ import { useNavigate } from 'react-router-dom';
  * @returns {object} The functions of the hook.
  */
 export default function useApi() {
+  const [, setIsAuthenticated] = useContext(AuthContext);
   const navigate = useNavigate();
-
-  // Checks if the user has to login again
-  const checkAuth = response => {
-    if ([401, 403].includes(response.status)) {
-      sessionStorage.removeItem('outdoor_muse_jwt');
-      navigate('/login');
-
-      return false;
-    }
-
-    return true;
-  }
 
   // Encodes an object in a query string
   const serialize = obj => {
@@ -38,13 +31,11 @@ export default function useApi() {
    * @returns {object} The backend response.
    */
   const apiCall = async (endpoint, method, body, defaultResult=[]) => {
-    let token = sessionStorage.getItem('outdoor_muse_jwt');
-
     endpoint = 'http://127.0.0.1:5000' + endpoint;
     method = method.toUpperCase();
 
     let headers = {
-      'Authorization': 'Bearer ' + token,
+      'Authorization': 'Bearer ' + sessionStorage.getItem(tokenName),
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     };
@@ -54,14 +45,6 @@ export default function useApi() {
       headers
     };
 
-    let defaultResponse = {
-      'result': defaultResult,
-      'error': {
-        'type': 'HTTPException',
-        'message': 'API fetch failed'
-      }
-    };
-
     if (body && method === 'GET') {
       endpoint = endpoint + '/' + serialize(body);
 
@@ -69,23 +52,41 @@ export default function useApi() {
       request_input.body = JSON.stringify(body);
     }
 
-    console.info(request_input);
+    console.info(
+      'API endpoint:\n',
+      endpoint,
+      '\nAPI request:\n',
+      request_input
+    );
 
     let apiResponse = await fetch(endpoint, request_input)
       .then(response => {
-        if (checkAuth(response)) {
+        if (response.ok) {
           return response.json().then(json => {
-            console.info('API result:', json.result);
-            return json.result;
+            console.info('API result:', json);
+            return json;
           });
         
         } else {
-          return defaultResponse;
+          throw new Error(response.status);
         }
       })
-      .catch(response => {
-        console.error('API error:', response);
-        return defaultResponse;
+      .catch(error => {
+        error = String(error).replace('Error: ', '');
+
+        if (error === '401') {
+          setIsAuthenticated(false).then(() => {
+            navigate('/login');
+          });
+        }
+
+        return {
+          'result': defaultResult,
+          'error': {
+            'type': 'HTTPException',
+            'message': 'API fetch failed'
+          }
+        };
       });
 
     return apiResponse;

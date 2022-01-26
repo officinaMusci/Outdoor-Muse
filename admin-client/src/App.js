@@ -12,7 +12,7 @@ import AppFrame from './components/AppFrame';
 import ProtectedRoute from './components/ProtectedRoute'
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
-import { AuthProvider } from './services/Auth';
+import { AuthProvider } from './services/authContext';
 
 
 /**
