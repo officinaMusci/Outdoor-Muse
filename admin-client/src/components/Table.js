@@ -17,7 +17,7 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Check as TrueIcon,
-  HourglassTop as FalseIcon
+  Close as FalseIcon
 } from '@mui/icons-material';
 import moment from 'moment';
 
@@ -135,6 +135,9 @@ const Table = props => {
     
     } else if (typeof value === 'boolean') {
       value = value ? <TrueIcon color='success' /> : <FalseIcon color='warning' />;
+    
+    } else if (typeof value === 'string' && !value.includes('@')) {
+      value = value.charAt(0).toUpperCase() + value.slice(1)
     }
 
     return value;

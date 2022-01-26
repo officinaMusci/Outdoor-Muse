@@ -174,6 +174,9 @@ class User:
                         self.password
                     )
 
+                if user_row.email != self.email:
+                    self.confirmed = False
+
                 user_row.updated = datetime.utcnow()
                 user_row.email = self.email
                 user_row.password = self.password

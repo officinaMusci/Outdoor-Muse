@@ -57,7 +57,12 @@ const DialogForm = props => {
   };
 
   return (
-    <Dialog open={open} onClose={handleCancel}>
+    <Dialog
+      fullWidth
+      maxWidth='xs'
+      open={open}
+      onClose={handleCancel}
+    >
       {title ?
         <DialogTitle>
           {title}
