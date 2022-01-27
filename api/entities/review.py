@@ -231,3 +231,16 @@ class Review:
             db_session.close()
         
         return reviews
+    
+
+    @classmethod
+    def get_count(cls, filter_by:dict={}):
+        '''Counts all Review objects in the database with optional filters'''
+        with database.create_session().begin() as db_session:
+            count = database.get_count(
+                db_session.query(ReviewRow).filter_by(**filter_by)
+            )
+            
+            db_session.close()
+        
+        return count

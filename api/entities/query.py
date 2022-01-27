@@ -306,6 +306,19 @@ class Query:
             db_session.close()
         
         return queries
+    
+
+    @classmethod
+    def get_count(cls, filter_by:dict={}):
+        '''Counts all Query objects in the database with optional filters'''
+        with database.create_session().begin() as db_session:
+            count = database.get_count(
+                db_session.query(QueryRow).filter_by(**filter_by)
+            )
+            
+            db_session.close()
+        
+        return count
 
 
     def associate_place_row(self, place_id=int) -> int:

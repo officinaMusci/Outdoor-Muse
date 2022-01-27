@@ -79,11 +79,10 @@ class Partner:
         ]) if reviews else 0
 
         with database.create_session().begin() as db_session:
-            self.query_count = len(
+            self.query_count = database.get_count(
                 db_session
                 .query(QueryPartnerRow)
                 .filter_by(partner_id=self.id)
-                .all()
             )
             
             db_session.close()
@@ -242,3 +241,16 @@ class Partner:
             db_session.close()
         
         return partners
+    
+
+    @classmethod
+    def get_count(cls, filter_by:dict={}):
+        '''Counts all Partner objects in the database with optional filters'''
+        with database.create_session().begin() as db_session:
+            count = database.get_count(
+                db_session.query(PartnerRow).filter_by(**filter_by)
+            )
+            
+            db_session.close()
+        
+        return count

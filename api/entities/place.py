@@ -86,11 +86,10 @@ class Place:
         ]) if reviews else 0
 
         with database.create_session().begin() as db_session:
-            self.query_count = len(
+            self.query_count = database.get_count(
                 db_session
                 .query(QueryPlaceRow)
                 .filter_by(place_id=self.id)
-                .all()
             )
             
             db_session.close()
@@ -272,3 +271,16 @@ class Place:
             db_session.close()
         
         return places
+    
+
+    @classmethod
+    def get_count(cls, filter_by:dict={}):
+        '''Counts all Place objects in the database with optional filters'''
+        with database.create_session().begin() as db_session:
+            count = database.get_count(
+                db_session.query(PlaceRow).filter_by(**filter_by)
+            )
+            
+            db_session.close()
+        
+        return count

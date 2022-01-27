@@ -237,6 +237,19 @@ class User:
             db_session.close()
         
         return users
+    
+
+    @classmethod
+    def get_count(cls, filter_by:dict={}):
+        '''Counts all User objects in the database with optional filters'''
+        with database.create_session().begin() as db_session:
+            count = database.get_count(
+                db_session.query(UserRow).filter_by(**filter_by)
+            )
+            
+            db_session.close()
+        
+        return count
 
 
     def check_password(self, password:str) -> bool:
