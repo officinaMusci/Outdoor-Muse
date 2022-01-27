@@ -33,7 +33,7 @@ class PartnerRow(database.Base):
     id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
     created = ORMColumn(ORMDateTime, default=datetime.utcnow)
     updated = ORMColumn(ORMDateTime, default=datetime.utcnow)
-    name = ORMColumn(ORMString, nullable=False)
+    name = ORMColumn(ORMString(255), nullable=False)
     location_lat = ORMColumn(ORMFloat, nullable=False)
     location_lng = ORMColumn(ORMFloat, nullable=False)
     types = ORMColumn(ORMPickleType, nullable=False)

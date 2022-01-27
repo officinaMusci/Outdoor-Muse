@@ -33,7 +33,7 @@ class PlaceRow(database.Base):
     updated = ORMColumn(ORMDateTime, default=datetime.utcnow)
     location_lat = ORMColumn(ORMFloat, nullable=False)
     location_lng = ORMColumn(ORMFloat, nullable=False)
-    name = ORMColumn(ORMString, nullable=False)
+    name = ORMColumn(ORMString(255), nullable=False)
     difficulty = ORMColumn(ORMInteger)
     duration = ORMColumn(ORMInterval)
     distance = ORMColumn(ORMInteger)

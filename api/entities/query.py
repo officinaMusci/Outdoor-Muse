@@ -40,7 +40,7 @@ class QueryRow(database.Base):
     max_walk = ORMColumn(ORMInterval)
     weather_ids = ORMColumn(ORMPickleType)
     max_results = ORMColumn(ORMInteger)
-    language = ORMColumn(ORMString)
+    language = ORMColumn(ORMString(5))
 
     user_id = ORMColumn(ORMInteger, ForeignKey('user.id'), nullable=True)
 

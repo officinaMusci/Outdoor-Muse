@@ -1,12 +1,6 @@
 from sqlalchemy import Column as ORMColumn
-from sqlalchemy import String as ORMString
 from sqlalchemy import Integer as ORMInteger
-from sqlalchemy import Float as ORMFloat
-from sqlalchemy import DateTime as ORMDateTime
-from sqlalchemy import Interval as ORMInterval
-from sqlalchemy import PickleType as ORMPickleType
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
 
 from services import database
 

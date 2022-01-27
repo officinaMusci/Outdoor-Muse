@@ -22,11 +22,11 @@ admin = User(
 admin.save()
 
 # Generate users
-for x in range(100):
+for x in range(randrange(5000, 10000)):
     User.generate_random().save()
 
 # Generate partners
-for x in range(100):
+for x in range(randrange(1000, 2000)):
     Partner.generate_random().save()
 
 # Get normal users
@@ -38,7 +38,7 @@ partners = Partner.get_all()
 
 # Generate queries
 for user in users:
-    for x in range(100):
+    for x in range(randrange(1000)):
         query_datetime = time.random_datetime(
             start=(
                 datetime.now(timezone.utc)
@@ -57,7 +57,7 @@ for user in users:
 
 # Generate place reviews
 for user in users:
-    for x in range(50):
+    for x in range(randrange(500)):
         review = Review.generate_random()
         review.user_id = user.id
         review.place_id = random.choice(places).id
@@ -65,7 +65,7 @@ for user in users:
 
 # Generate partner reviews
 for user in users:
-    for x in range(50):
+    for x in range(randrange(500)):
         review = Review.generate_random()
         review.user_id = user.id
         review.partner_id = random.choice(partners).id
