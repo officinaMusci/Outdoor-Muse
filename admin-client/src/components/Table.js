@@ -63,7 +63,7 @@ const TableButton = props => {
     onDelete
   } = props;
 
-  return type === 'edit' ?
+  return type === 'edit' && onEdit ?
     <IconButton
       onClick={() => onEdit(rowId)}
       sx={{
@@ -73,7 +73,7 @@ const TableButton = props => {
       <EditIcon />
     </IconButton>
     :
-    type === 'delete' ?
+    type === 'delete' && onDelete ?
       <IconButton
         onClick={() => onDelete(rowId)}
       sx={{

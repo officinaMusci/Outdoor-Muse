@@ -6,7 +6,8 @@ import {
   QueryStats as StatsIcon,
   Group as UsersIcon,
   Store as PartnersIcon,
-  Flag as ReportsIcon,
+  Landscape as PlacesIcon,
+  Comment as ReviewsIcon,
 } from '@mui/icons-material';
 import { frFR } from '@mui/material/locale';
 
@@ -14,7 +15,8 @@ import HomePage from './pages/HomePage';
 import StatsPage from './pages/StatsPage';
 import UsersPage from './pages/UsersPage';
 import PartnersPage from './pages/PartnersPage';
-import ReportsPage from './pages/ReportsPage';
+import PlacesPage from './pages/PlacesPage';
+import ReviewsPage from './pages/ReviewsPage';
 
 
 // The token name
@@ -48,10 +50,16 @@ export const routes = [
     page: <PartnersPage />
   },
   {
-    label: 'Reportages',
-    path: '/reports',
-    icon: <ReportsIcon />,
-    page: <ReportsPage />
+    label: 'Randonnées',
+    path: '/places',
+    icon: <PlacesIcon />,
+    page: <PlacesPage />
+  },
+  {
+    label: 'Avis',
+    path: '/reviews',
+    icon: <ReviewsIcon />,
+    page: <ReviewsPage />
   },
 ]
 

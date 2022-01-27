@@ -23,19 +23,19 @@ const apiPath = 'partners';
 
 // The table columns
 const tableColumns = [
-  {id: 'id',  label: 'ID'},
+  {id: 'id',  label: 'ID', align: 'right'},
   {id: 'created',  label: 'Créé'},
   {id: 'updated',  label: 'Mis à jour'},
 
   {id: 'name',  label: 'Nom'},
-  {id: 'types',  label: 'Types'},
+  {id: 'types',  label: 'Catégories'},
   {id: 'location',  label: 'Emplacement'},
   
   {id: 'average_rating',  label: 'Évaluation (μ)'},
-  {id: 'query_count',  label: 'Apparitions'},
+  {id: 'query_count',  label: 'Apparitions', align: 'right'},
   
-  {id: 'edit',  label: ''},
-  {id: 'delete',  label: ''}
+  {id: 'edit',  label: '', align: 'center'},
+  {id: 'delete',  label: '', align: 'center'}
 ];
 
 
@@ -201,11 +201,11 @@ export default function PartnersPage() {
         />
         <FormControl sx={inputStyle}>
           <InputLabel id='types-label'>
-            Types
+            Catégories
           </InputLabel>
           <Select
             labelId='types-label'
-            label='Types'
+            label='Catégories'
             multiple
             value={formData.types}
             onChange={e => handleFormChange('types', e)}

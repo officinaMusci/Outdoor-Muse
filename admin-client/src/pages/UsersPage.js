@@ -22,18 +22,18 @@ const apiPath = 'users';
 
 // The table columns
 const tableColumns = [
-  { id: 'id', label: 'ID' },
-  { id: 'created', label: 'Créé' },
-  { id: 'updated', label: 'Mis à jour' },
+  {id: 'id', label: 'ID', align: 'right'},
+  {id: 'created', label: 'Créé'},
+  {id: 'updated', label: 'Mis à jour'},
 
-  { id: 'email', label: 'E-mail'},
-  { id: 'confirmed', label: 'Confirmé'},
-  { id: 'role', label: 'Rôle'},
-  { id: 'name', label: 'Nom'},
-  { id: 'points', label: 'Points'},
+  {id: 'email', label: 'E-mail'},
+  {id: 'confirmed', label: 'Confirmé', align: 'center'},
+  {id: 'role', label: 'Rôle'},
+  {id: 'name', label: 'Nom'},
+  {id: 'points', label: 'Points', align: 'right'},
 
-  { id: 'edit', label: '' },
-  { id: 'delete', label: '' }
+  {id: 'edit', label: '', align: 'center'},
+  {id: 'delete', label: '', align: 'center'}
 ];
 
 
