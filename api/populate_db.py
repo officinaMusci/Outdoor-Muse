@@ -35,15 +35,15 @@ def generate_query(user:User=None) -> Query:
     query.user_id = user.id if user else None
     query.save()
     
-    for x in range(randrange(100)):
+    for x in range(randrange(10)):
         query.associate_place_row(random.choice(places).id)
     
-    for x in range(randrange(100)):
+    for x in range(randrange(10)):
         query.associate_partner_row(random.choice(partners).id)
     
     return query
 
-'''
+
 # Drop all database tables
 #with database.create_session().begin() as db_session:
 #    database.Base.metadata.drop_all(db_session.get_bind())
@@ -60,13 +60,13 @@ admin = User(
 admin.save()
 
 # Generate users
-for x in range(randrange(1000, 1500)):
+for x in range(randrange(100, 150)):
     generate_in_the_past(User).save()
 
 # Generate partners
-for x in range(randrange(500, 1000)):
+for x in range(randrange(50, 100)):
     generate_in_the_past(Partner).save()
-'''
+
 # Get activated normal users
 users = User.get_all(filter_by={
     'role': 'user',
@@ -76,19 +76,19 @@ users = User.get_all(filter_by={
 # Get places and partners
 places = Place.get_all()
 partners = Partner.get_all()
-'''
+
 # Generate user queries
 for user in users:
-    for x in range(randrange(100)):
+    for x in range(randrange(10)):
         generate_query(user).save()
-'''
+
 # Generate anonymous queries
-for x in range(randrange(1000, 5000)):
+for x in range(randrange(100, 500)):
     generate_query().save()
 
 # Generate place reviews
 for user in users:
-    for x in range(randrange(50)):
+    for x in range(randrange(5)):
         review = generate_in_the_past(Review)
         review.user_id = user.id
         review.place_id = random.choice(places).id
@@ -96,7 +96,7 @@ for user in users:
 
 # Generate partner reviews
 for user in users:
-    for x in range(randrange(50)):
+    for x in range(randrange(5)):
         review = generate_in_the_past(Review)
         review.user_id = user.id
         review.partner_id = random.choice(partners).id

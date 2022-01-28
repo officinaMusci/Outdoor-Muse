@@ -2,6 +2,7 @@ import {
   createContext,
   useState
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { tokenName } from '../settings';
 
@@ -15,8 +16,9 @@ export const AuthContext = createContext();
  * @component
  */
 export const AuthProvider = props => {
-  const token = sessionStorage.getItem(tokenName);
+  const navigate = useNavigate();
 
+  const token = sessionStorage.getItem(tokenName);
   const [isAuthenticated, setIsAuthenticated] = useState(!!token);
 
   const handleSetIsAuthenticated = async state => {
@@ -29,6 +31,7 @@ export const AuthProvider = props => {
     } else {
       sessionStorage.removeItem(tokenName);
       setIsAuthenticated(false);
+      navigate('/login');
     }
   }
 

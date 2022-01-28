@@ -65,6 +65,7 @@ export default function PlacesPage() {
           animation='wave'
           sx={{
             height: 500,
+            backgroundColor: 'rgba(255, 255, 255, .5)',
             transform: 'none'
           }}
         />

@@ -1,5 +1,4 @@
 import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { AuthContext } from './authContext';
 import { tokenName } from '../settings';
@@ -11,7 +10,6 @@ import { tokenName } from '../settings';
  */
 export default function useApi() {
   const [, setIsAuthenticated] = useContext(AuthContext);
-  const navigate = useNavigate();
 
   // Encodes an object in a query string
   const serialize = obj => {
@@ -75,9 +73,7 @@ export default function useApi() {
         error = String(error).replace('Error: ', '');
 
         if (error === '401') {
-          setIsAuthenticated(false).then(() => {
-            navigate('/login');
-          });
+          setIsAuthenticated(false);
         }
 
         return {

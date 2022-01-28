@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 import random
 import statistics
+from typing import List
 
 from sqlalchemy import Column as ORMColumn
 from sqlalchemy import DateTime as ORMDateTime
@@ -61,7 +62,7 @@ class Partner:
     '''
     name:str
     location:Location
-    types:str
+    types:List[str]
 
     review_count:int=0
     average_rating:int=0
@@ -191,7 +192,8 @@ class Partner:
 
                 partner_row.updated = datetime.utcnow()
                 partner_row.name = self.name
-                partner_row.location = self.location
+                partner_row.location_lat = self.location.lat
+                partner_row.location_lng = self.location.lng
                 partner_row.types = self.types
 
                 db_session.flush()

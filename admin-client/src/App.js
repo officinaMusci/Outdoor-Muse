@@ -21,40 +21,32 @@ import { AuthProvider } from './services/authContext';
  */
 export default function App() {
   return (
-    <main
-      style={{
-        width: '100%',
-        height: '100%',
-        backgroundColor: theme.palette.grey[100]
-      }}
-    >
+    <Router>
       <AuthProvider>
         <ThemeProvider theme={theme}>
-          <Router>
-            <AppFrame>
-              <Routes>
+          <AppFrame>
+            <Routes>
+              <Route
+                path='/login'
+                element={<LoginPage />}
+              />
+              {routes.map(route => (
                 <Route
-                  path='/login'
-                  element={<LoginPage />}
-                />
-                {routes.map(route => (
+                  key={route.path}
+                  path={route.path}
+                  element={<ProtectedRoute />}
+                >
                   <Route
-                    key={route.path}
                     path={route.path}
-                    element={<ProtectedRoute />}
-                  >
-                    <Route
-                      path={route.path}
-                      element={route.page}
-                    />
-                  </Route>
-                ))}
-                <Route element={<NotFoundPage />} />
-              </Routes>
-            </AppFrame>
-          </Router>
+                    element={route.page}
+                  />
+                </Route>
+              ))}
+              <Route element={<NotFoundPage />} />
+            </Routes>
+          </AppFrame>
         </ThemeProvider>
       </AuthProvider>
-    </main>
+    </Router>
   );
 }

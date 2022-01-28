@@ -80,11 +80,13 @@ export const theme = createTheme({
     ].join(','),
   },
   custom: {
+    appName: 'Outdoor Muse',
     appFrame: {
       title: 'Outdoor Muse Console',
       drawerWidth: 300,
       breakPoint: 'lg'
     },
-    datetimeFormat: 'DD.MM.YYYY HH:mm'
+    datetimeFormat: 'DD.MM.YYYY HH:mm',
+    backgroundImage: 'https://live.staticflickr.com/1531/24075708082_babc1a444e_k_d.jpg'
   }
 }, frFR);

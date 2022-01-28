@@ -1,3 +1,6 @@
+import statistics
+from datetime import timedelta
+
 import flask
 
 from utils import app
@@ -6,6 +9,7 @@ from entities.place import Place
 from entities.partner import Partner
 from entities.query import Query
 from entities.review import Review
+from services import weather
 
 
 blueprint = flask.Blueprint(
@@ -59,9 +63,9 @@ def overview():
     })
 
 
-@blueprint.route('/over-time', methods=['GET'])
+@blueprint.route('/all', methods=['GET'])
 @app.jwt_required(roles=['admin'])
-def over_time():
+def all():
     '''The API route to get entity based statistics.
     
     RETURNS:
@@ -72,6 +76,31 @@ def over_time():
         403 response: Forbidden if the review hasn't one of the required roles.
     '''
 
+    all_queries = Query.get_all()
+    weather_counts = {
+        'clear': 0,
+        'clouds': 0,
+        'snow': 0,
+        'rain': 0,
+        'thunderstorm': 0,
+        'other': 0
+    }
+    
+    for query in all_queries:
+        for name, ids in weather.id_groups.items():
+            if not set(query.weather_ids).isdisjoint(ids):
+                weather_counts[name] += 1
+    
+
+    radius_mean = statistics.mean([q.radius for q in all_queries])
+    max_travel_mean = timedelta(seconds=statistics.mean([
+        q.max_travel.total_seconds() for q in all_queries
+    ]))
+    max_walk_mean = timedelta(seconds=statistics.mean([
+        q.max_walk.total_seconds() for q in all_queries
+    ]))
+
+
     def create_over_time(entity_class):
         '''Create a series showing entity growing over time'''
         over_time = []
@@ -79,19 +108,23 @@ def over_time():
         
         records.sort(key=lambda record: record.created)
         for record in records:
-            over_time.append({
-                'count': len(over_time) + 1,
-                'datetime': record.created
-            })
+            over_time.append([
+                len(over_time) + 1,
+                record.created
+            ])
         
         return over_time
     
     result = {
-        'users': create_over_time(User),
-        'partners': create_over_time(Query),
-        'places': create_over_time(Place),
-        'queries': create_over_time(Partner),
-        'reviews': create_over_time(Review)
+        'weather_counts': [[k, v] for k, v in weather_counts.items()],
+        'radius_mean': radius_mean,
+        'max_travel_mean': max_travel_mean,
+        'max_walk_mean': max_walk_mean,
+        'over_time': {
+            'users': create_over_time(User),
+            'queries': create_over_time(Partner),
+            'reviews': create_over_time(Review)
+        }
     }
     
     return app.response(result)

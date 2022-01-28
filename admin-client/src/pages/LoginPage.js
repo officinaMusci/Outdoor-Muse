@@ -86,13 +86,9 @@ export default function LoginPage() {
     <Box
       component='form'
       sx={{
-        mt: 4,
         display: 'flex',
         justifyContent: 'center',
-        '& > :not(style)': {
-          m: 1,
-          maxWidth: '25ch'
-        },
+        alignItems: 'center',
       }}
       noValidate
       autoComplete='off'
@@ -104,7 +100,10 @@ export default function LoginPage() {
       <Paper
         elevation={5}
         sx={{
-          p: 2
+          width: '100%',
+          maxWidth: 300,
+          p: 2,
+          mt: 3
         }}
       >
         <Typography
@@ -112,9 +111,6 @@ export default function LoginPage() {
           component='h2'
           textAlign='center'
           color='secondary'
-          sx={{
-            mt: 1
-          }}
         >
           Connexion
         </Typography>

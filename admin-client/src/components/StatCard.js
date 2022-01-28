@@ -12,6 +12,8 @@ import Plot from 'react-plotly.js';
  * Renders a card showing time statistics
  * @property  {string}  title  The card title
  * @property  {Array}   data   The stats to show
+ * @property  {string}  type   The stats type to use (defaults to 'scatter')
+ * @property  {string}  mode   The stats mode to use (defaults to 'lines')
  * @component
  */
 const StatCard = props => {
@@ -19,7 +21,9 @@ const StatCard = props => {
 
   const {
     title,
-    data
+    data,
+    type='scatter',
+    mode='lines'
   } = props;
 
   return (
@@ -29,7 +33,7 @@ const StatCard = props => {
       <Typography
         variant='h5'
         color='secondary'
-        fontWeight={700}
+        align='center'
       >
         {title}
       </Typography>
@@ -37,11 +41,11 @@ const StatCard = props => {
       <Plot
         data={[
           {
-            x: data ? data.map(datum => datum.datetime) : [],
-            y: data ? data.map(datum => datum.count) : [],
-            type: 'scatter',
-            mode: 'lines',
-            marker: { color: theme.palette.secondary.main },
+            x: data ? data.map(datum => datum[0]) : [],
+            y: data ? data.map(datum => datum[1]) : [],
+            type: type,
+            mode: type === 'scatter' ? mode : '',
+            //marker: { color: theme.palette.secondary.main },
           }
         ]}
         layout={{
@@ -49,15 +53,15 @@ const StatCard = props => {
           autosize: true,
           useResizeHandler: true,
           margin: {
-            l: 10,
-            r: 10,
-            b: 10,
-            t: 10,
+            l: 50,
+            r: 50,
+            b: 50,
+            t: 50,
             pad: 0
           },
           xaxis: {
-            rangeselector: true,
-            rangeslider: true,
+            rangeselector: type === 'scatter',
+            rangeslider: type === 'scatter',
           }
         }}
         style={{width: '100%', height: '100%'}}

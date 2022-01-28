@@ -230,6 +230,16 @@ export default function AppFrame(props) {
     navigate('/login');
   }
 
+  const background = {
+    minHeight: '100vh',
+    backgroundColor: theme.palette.grey[100],
+    backgroundImage: `url(${theme.custom.backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center center',
+    backgroundRepeat: 'no-repeat',
+    backgroundAttachment: 'fixed'
+  }
+
   return (
     <>
       <AppBar
@@ -319,6 +329,7 @@ export default function AppFrame(props) {
       <Container
         sx={isAuthenticated ?
           {
+            ...background,
             width: {
               [theme.custom.appFrame.breakPoint]: `calc(100% - ${theme.custom.appFrame.drawerWidth}px)`
             },
@@ -330,7 +341,11 @@ export default function AppFrame(props) {
             },
           }
           :
-          {}
+          {
+            ...background,
+            width: '100%',
+            maxWidth: 'none !important'
+          }
         }
       >
         {children}

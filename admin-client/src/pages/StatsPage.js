@@ -3,11 +3,13 @@ import {
   useEffect
 } from 'react';
 import {
+  Divider,
   Grid,
   Skeleton
 } from '@mui/material';
 
 import useApi from '../services/apiHook';
+import DataCard from '../components/DataCard';
 import StatCard from '../components/StatCard';
 
 
@@ -19,18 +21,18 @@ export default function StatsPage() {
   const { apiCall } = useApi();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [overtimeData, setOvertimeData] = useState();
+  const [allData, setAllData] = useState();
 
   useEffect(() => {
     setIsLoading(true);
     apiCall(
-      `/statistics/over-time`,
+      `/statistics/all`,
       'GET'
     )
       .then(response => {
         setIsLoading(false);
         if (!response.error) {
-          setOvertimeData(response.result);
+          setAllData(response.result);
         }
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -50,37 +52,55 @@ export default function StatsPage() {
             <Skeleton
               animation='wave'
               sx={{
-                height: 150,
+                height: 500,
+                backgroundColor: 'rgba(255, 255, 255, .5)',
                 transform: 'none'
               }}
             />
           </Grid>
         ))
         :
-        overtimeData ?
+        allData ?
           <>
             <Grid item xs={12} md={6}>
               <StatCard
-                title='Avis'
-                data={overtimeData.reviews}
+                title='Météo souhaitée'
+                data={allData.weather_counts}
+                type='bar'
               />
             </Grid>
             <Grid item xs={12} md={6}>
+              <DataCard
+                count={Math.floor(allData.radius_mean / 1000) + ' km'}
+                description='Rayon max (μ)'
+              />
+              <Divider light sx={{mt: 1, mb: 1}} />
+              <DataCard
+                count={allData.max_travel_mean.split('.')[0]}
+                description='Trajet max (μ)'
+              />
+              <Divider light sx={{mt: 1, mb: 1}} />
+              <DataCard
+                count={allData.max_walk_mean.split('.')[0]}
+                description='Marche max (μ)'
+              />
+            </Grid>
+            <Grid item xs={12}>
               <StatCard
-                title='Partenaires'
-                data={overtimeData.partners}
+                title='Avis'
+                data={allData.over_time.reviews}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12}>
               <StatCard
                 title='Utilisateurs'
-                data={overtimeData.users}
+                data={allData.over_time.users}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12}>
               <StatCard
                 title='Recherches'
-                data={overtimeData.queries}
+                data={allData.over_time.queries}
               />
             </Grid>
           </>

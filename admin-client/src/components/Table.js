@@ -12,7 +12,8 @@ import {
   TablePagination,
   IconButton,
   Skeleton,
-  Rating
+  Rating,
+  TableSortLabel
 } from '@mui/material';
 import {
   Add as CreateIcon,
@@ -110,8 +111,16 @@ const Table = props => {
     isLoading
   } = props;
 
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('calories');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
+
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -157,6 +166,34 @@ const Table = props => {
     return value;
   }
 
+  const descendingComparator = (a, b, orderBy) => {
+    if (b[orderBy] < a[orderBy]) {
+      return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+      return 1;
+    }
+    return 0;
+  }
+  
+  const getComparator = (order, orderBy) => {
+    return order === 'desc'
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
+  }
+  
+  const stableSort = (array, comparator) => {
+    const stabilizedThis = array.map((el, index) => [el, index]);
+    stabilizedThis.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) {
+        return order;
+      }
+      return a[1] - b[1];
+    });
+    return stabilizedThis.map((el) => el[0]);
+  }
+
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <TableContainer sx={{ maxHeight: '80vh' }}>
@@ -167,13 +204,20 @@ const Table = props => {
                 <TableCell
                   key={column.id}
                   align={column.align}
+                  sortDirection={orderBy === column.id ? order : false}
                   sx={{
                     color: theme.palette.secondary.main,
                     fontWeight: 700,
                     borderBottomColor: theme.palette.grey[600]
                   }}
                 >
-                  {column.label}
+                  <TableSortLabel
+                    active={orderBy === column.id}
+                    direction={orderBy === column.id ? order : 'asc'}
+                    onClick={e => handleRequestSort(e, column.id)}
+                  >
+                    {column.label}
+                  </TableSortLabel>
                 </TableCell>
               ))}
             </TableRow>
@@ -197,7 +241,7 @@ const Table = props => {
                 </TableRow>
               ))
               :
-              rows
+              stableSort(rows, getComparator(order, orderBy))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map(row => (
                 <TableRow

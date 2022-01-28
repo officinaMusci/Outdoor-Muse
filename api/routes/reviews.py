@@ -32,8 +32,13 @@ def get():
         reviews = Review.get_all(request)
 
         for i, review in enumerate(reviews):
-            reviews[i].partner_name = Partner.get_from_id(review.partner_id).name
-            reviews[i].place_name = Place.get_from_id(review.place_id).name
+            reviews[i].partner_name = Partner.get_from_id(
+                review.partner_id
+            ).name if review.partner_id else None
+            
+            reviews[i].place_name = Place.get_from_id(
+                review.place_id
+            ).name if review.place_id else None
 
         return app.response(reviews)
     

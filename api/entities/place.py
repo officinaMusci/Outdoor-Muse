@@ -217,7 +217,8 @@ class Place:
 
                 place_row.updated = datetime.utcnow()
                 place_row.name = self.name
-                place_row.location = self.location
+                place_row.location_lat = self.location.lat
+                place_row.location_lng = self.location.lng
                 place_row.difficulty = self.difficulty
                 place_row.duration = self.duration
                 place_row.distance = self.distance

@@ -243,8 +243,10 @@ class Query:
                 query_row = db_session.query(QueryRow).get(self.id)
 
                 query_row.updated = datetime.utcnow()
-                query_row.location = self.location
-                query_row.interval = self.interval
+                query_row.location_lat = self.location.lat
+                query_row.location_lng = self.location.lng
+                query_row.interval_start = self.interval.start
+                query_row.interval_end = self.interval.end
                 query_row.radius = self.radius
                 query_row.types = self.types
                 query_row.max_travel = self.max_travel
