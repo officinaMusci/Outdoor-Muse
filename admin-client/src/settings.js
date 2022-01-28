@@ -66,12 +66,25 @@ export const routes = [
 
 // The Material UI theme for the app
 export const theme = createTheme({
-  
+  palette: {
+    primary: {
+      main: '#006069'
+    },
+    secondary: {
+      main: '#AB4600'
+    }
+  },
+  typography: {
+    fontFamily: [
+      'Ubuntu',
+    ].join(','),
+  },
   custom: {
     appFrame: {
       title: 'Outdoor Muse Console',
       drawerWidth: 300,
       breakPoint: 'lg'
-    }
+    },
+    datetimeFormat: 'DD.MM.YYYY HH:mm'
   }
 }, frFR);

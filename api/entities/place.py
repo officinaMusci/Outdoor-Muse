@@ -59,6 +59,7 @@ class Place:
         duration: The duration of the average visit.
         distance: The distance covered during the average visit.
         types: The types the place belongs to.
+        review_count: The amount of reviews received.
         average_rating: The average rating obtained from reviews.
         query_count: The amount of query relations.
     '''
@@ -69,6 +70,7 @@ class Place:
     distance:int=None
     types:List[str]=None
 
+    review_count:int=0
     average_rating:int=0
     query_count:int=0
 
@@ -81,15 +83,17 @@ class Place:
         '''Get additional data from database relations'''
         reviews = Review.get_all(filter_by={'place_id': self.id})
 
+        self.review_count = len(reviews)
         self.average_rating = statistics.mean([
             review.rating for review in reviews
         ]) if reviews else 0
 
         with database.create_session().begin() as db_session:
-            self.query_count = database.get_count(
+            self.query_count = len(
                 db_session
                 .query(QueryPlaceRow)
                 .filter_by(place_id=self.id)
+                .all()
             )
             
             db_session.close()
@@ -277,8 +281,8 @@ class Place:
     def get_count(cls, filter_by:dict={}):
         '''Counts all Place objects in the database with optional filters'''
         with database.create_session().begin() as db_session:
-            count = database.get_count(
-                db_session.query(PlaceRow).filter_by(**filter_by)
+            count = len(
+                db_session.query(PlaceRow).filter_by(**filter_by).all()
             )
             
             db_session.close()

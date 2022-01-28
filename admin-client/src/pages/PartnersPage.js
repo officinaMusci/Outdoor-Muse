@@ -3,18 +3,20 @@ import {
   useEffect
 } from 'react';
 import {
-  Paper,
   TextField,
   Box,
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Divider,
+  Skeleton
 } from '@mui/material';
 
 import useApi from '../services/apiHook';
 import Table from '../components/Table';
 import DialogForm from '../components/DialogForm';
+import MapCard from '../components/MapCard';
 
 
 // The API path to use
@@ -31,6 +33,7 @@ const tableColumns = [
   {id: 'types',  label: 'Catégories'},
   {id: 'location',  label: 'Emplacement'},
   
+  {id: 'review_count',  label: 'Avis', align: 'right'},
   {id: 'average_rating',  label: 'Évaluation (μ)'},
   {id: 'query_count',  label: 'Apparitions', align: 'right'},
   
@@ -173,7 +176,19 @@ export default function PartnersPage() {
   }
 
   return (
-    <Paper>
+    <>
+      {isLoading ?
+        <Skeleton
+          animation='wave'
+          sx={{
+            height: 500,
+            transform: 'none'
+          }}
+        />
+        :
+        <MapCard data={rows} />
+      }
+      <Divider light sx={{ mt: 3, mb: 3 }} />
       <Table
         columns={tableColumns}
         rows={rows}
@@ -242,6 +257,6 @@ export default function PartnersPage() {
           />
         </Box>
       </DialogForm>
-    </Paper>
+    </>
   );
 }

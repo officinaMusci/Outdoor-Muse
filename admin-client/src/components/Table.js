@@ -124,7 +124,7 @@ const Table = props => {
 
   const formatValue = (value, column) => {
     if (column === 'distance') {
-      value = value / 100  + ' km';
+      value = Number(value / 1000).toLocaleString()  + ' km';
     
     } else if (column === 'duration') {
       value = value.split(':');
@@ -142,13 +142,16 @@ const Table = props => {
       && typeof value !== 'number'
       && moment(value).isValid()
     ) {
-      value = moment(new Date(value)).format('DD.MM.YYYY HH:mm');
+      value = moment(new Date(value)).local().format(theme.custom.datetimeFormat);
     
     } else if (typeof value === 'boolean') {
       value = value ? <TrueIcon color='success' /> : <FalseIcon color='warning' />;
     
     } else if (typeof value === 'string' && !value.includes('@')) {
       value = value.charAt(0).toUpperCase() + value.slice(1)
+    
+    } else if (typeof value === 'number') {
+      value = value.toLocaleString();
     }
 
     return value;
@@ -165,6 +168,7 @@ const Table = props => {
                   key={column.id}
                   align={column.align}
                   sx={{
+                    color: theme.palette.secondary.main,
                     fontWeight: 700,
                     borderBottomColor: theme.palette.grey[600]
                   }}

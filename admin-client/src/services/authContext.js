@@ -1,6 +1,6 @@
 import {
-    createContext,
-    useState
+  createContext,
+  useState
 } from 'react';
 
 import { tokenName } from '../settings';
@@ -15,33 +15,33 @@ export const AuthContext = createContext();
  * @component
  */
 export const AuthProvider = props => {
-    const token = sessionStorage.getItem(tokenName);
+  const token = sessionStorage.getItem(tokenName);
 
-    const [isAuthenticated, setIsAuthenticated] = useState(!!token);
+  const [isAuthenticated, setIsAuthenticated] = useState(!!token);
 
-    const handleSetIsAuthenticated = async state => {
-        state = await state;
+  const handleSetIsAuthenticated = async state => {
+    state = await state;
 
-        if (typeof state === 'string') {
-            sessionStorage.setItem(tokenName, state);
-            setIsAuthenticated(true);
+    if (typeof state === 'string') {
+      sessionStorage.setItem(tokenName, state);
+      setIsAuthenticated(true);
 
-        } else {
-            sessionStorage.removeItem(tokenName);
-            setIsAuthenticated(false);
-        }
+    } else {
+      sessionStorage.removeItem(tokenName);
+      setIsAuthenticated(false);
     }
+  }
 
-    return (
-        <AuthContext.Provider
-            value={[
-                isAuthenticated,
-                handleSetIsAuthenticated
-            ]}
-        >
-            {props.children}
-        </AuthContext.Provider>
-    );
+  return (
+    <AuthContext.Provider
+      value={[
+        isAuthenticated,
+        handleSetIsAuthenticated
+      ]}
+    >
+      {props.children}
+    </AuthContext.Provider>
+  );
 }
 
 
@@ -50,9 +50,9 @@ export const AuthProvider = props => {
  * @component
  */
 export const AuthConsumer = props => {
-    return (
-        <AuthContext.Consumer>
-            {props.children}
-        </AuthContext.Consumer>
-    );
+  return (
+    <AuthContext.Consumer>
+      {props.children}
+    </AuthContext.Consumer>
+  );
 }

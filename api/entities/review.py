@@ -21,7 +21,7 @@ class ReviewRow(database.Base):
     id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
     created = ORMColumn(ORMDateTime, default=datetime.utcnow)
     updated = ORMColumn(ORMDateTime, default=datetime.utcnow)
-    comment = ORMColumn(ORMString(255), nullable=False)
+    comment = ORMColumn(ORMString(2550), nullable=False)
     rating = ORMColumn(ORMInteger, nullable=False)
     
     user_id = ORMColumn(ORMInteger, ForeignKey('user.id'), nullable=True)
@@ -237,8 +237,8 @@ class Review:
     def get_count(cls, filter_by:dict={}):
         '''Counts all Review objects in the database with optional filters'''
         with database.create_session().begin() as db_session:
-            count = database.get_count(
-                db_session.query(ReviewRow).filter_by(**filter_by)
+            count = len(
+                db_session.query(ReviewRow).filter_by(**filter_by).all()
             )
             
             db_session.close()

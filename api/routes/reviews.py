@@ -2,6 +2,8 @@ import flask
 
 from utils import app
 from entities.review import Review
+from entities.place import Place
+from entities.partner import Partner
 
 
 blueprint = flask.Blueprint(
@@ -28,6 +30,11 @@ def get():
 
     if flask.request.method == 'GET':
         reviews = Review.get_all(request)
+
+        for i, review in enumerate(reviews):
+            reviews[i].partner_name = Partner.get_from_id(review.partner_id).name
+            reviews[i].place_name = Place.get_from_id(review.place_id).name
+
         return app.response(reviews)
     
     elif flask.request.method == 'POST':

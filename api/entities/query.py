@@ -312,8 +312,8 @@ class Query:
     def get_count(cls, filter_by:dict={}):
         '''Counts all Query objects in the database with optional filters'''
         with database.create_session().begin() as db_session:
-            count = database.get_count(
-                db_session.query(QueryRow).filter_by(**filter_by)
+            count = len(
+                db_session.query(QueryRow).filter_by(**filter_by).all()
             )
             
             db_session.close()

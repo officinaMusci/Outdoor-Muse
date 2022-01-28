@@ -41,16 +41,3 @@ def create_session(engine=None):
     Session = sessionmaker(bind=engine)
     
     return Session
-
-
-def get_count(query):
-    '''Gets the count for a given query'''
-    count_query = query.statement.with_only_columns([
-        func.count()
-    ]).order_by(None)
-    
-    count = query.session.execute(
-        count_query
-    ).scalar()
-    
-    return count

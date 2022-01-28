@@ -14,7 +14,8 @@ import {
   InputAdornment,
   IconButton,
   Button,
-  Alert
+  Alert,
+  Divider
 } from '@mui/material';
 import {
   VisibilityOff,
@@ -110,12 +111,14 @@ export default function LoginPage() {
           variant='h5'
           component='h2'
           textAlign='center'
+          color='secondary'
           sx={{
             mt: 1
           }}
         >
           Connexion
         </Typography>
+        <Divider light sx={{ mt: 1, mb: .5 }} />
         <TextField
           value={email}
           onInput={handleEmailChange}

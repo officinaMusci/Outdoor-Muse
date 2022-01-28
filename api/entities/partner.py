@@ -55,6 +55,7 @@ class Partner:
         name: The partner name.
         location: The partner location.
         types: The types the partner belongs to.
+        review_count: The amount of reviews received.
         average_rating: The average rating obtained from reviews.
         query_count: The amount of query relations.
     '''
@@ -62,6 +63,7 @@ class Partner:
     location:Location
     types:str
 
+    review_count:int=0
     average_rating:int=0
     query_count:int=0
 
@@ -74,15 +76,17 @@ class Partner:
         '''Get additional data from database relations'''
         reviews = Review.get_all(filter_by={'partner_id': self.id})
 
+        self.review_count = len(reviews)
         self.average_rating = statistics.mean([
             review.rating for review in reviews
         ]) if reviews else 0
 
         with database.create_session().begin() as db_session:
-            self.query_count = database.get_count(
+            self.query_count = len(
                 db_session
                 .query(QueryPartnerRow)
                 .filter_by(partner_id=self.id)
+                .all()
             )
             
             db_session.close()
@@ -247,8 +251,8 @@ class Partner:
     def get_count(cls, filter_by:dict={}):
         '''Counts all Partner objects in the database with optional filters'''
         with database.create_session().begin() as db_session:
-            count = database.get_count(
-                db_session.query(PartnerRow).filter_by(**filter_by)
+            count = len(
+                db_session.query(PartnerRow).filter_by(**filter_by).all()
             )
             
             db_session.close()

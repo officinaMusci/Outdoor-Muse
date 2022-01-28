@@ -9,15 +9,18 @@ Outdoor Muse is a web service that allows you to discover new outdoor places, kn
 To configure the project, create a .env file (gitignored) in the project root :
 
 ```
-LANGUAGE='en'
+LANGUAGE='fr'
 DATETIME_FORMAT='%Y-%m-%d %H:%M:%S.%f'
 
-DB_ENGINE='sqlite:///outdoor_muse.db'
+SECRET_KEY='...'
+JWT_SECRET_KEY='...'
 
 GOOGLE_KEY='...'
 OPENWEATHER_KEY='...'
 
 FLASK_ENV='development'
+
+DB_ENGINE='...'
 ```
 
 ## Install:
@@ -31,11 +34,11 @@ It automatically generates HTML doc and runs a test after the installing process
 ## Test:
 
 ```shell
-sh PROJECT_PATH/test.sh
+sh PROJECT_PATH/api/test.sh
 ```
 
 ## Run in development mode:
 
 ```shell
-sh PROJECT_PATH/dev.sh
+sh PROJECT_PATH/api/run.sh
 ```

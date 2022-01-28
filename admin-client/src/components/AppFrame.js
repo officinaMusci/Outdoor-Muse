@@ -323,7 +323,8 @@ export default function AppFrame(props) {
               [theme.custom.appFrame.breakPoint]: `calc(100% - ${theme.custom.appFrame.drawerWidth}px)`
             },
             maxWidth: '100% !important',
-            mt: 3,
+            pt: 3,
+            pb: 3,
             ml: {
               [theme.custom.appFrame.breakPoint]: `${theme.custom.appFrame.drawerWidth}px`
             },

@@ -5,7 +5,17 @@ import flask_jwt_extended as flask_jwt
 import flask_cors
 from dotenv import load_dotenv
 
-from routes import root, auth, users, places, partners, queries, reviews, search
+from routes import (
+    root,
+    auth,
+    users,
+    places,
+    partners,
+    queries,
+    reviews,
+    search,
+    statistics
+)
 from utils.json_encoder import CustomJSONEncoder
 from utils.app import error
 
@@ -44,5 +54,6 @@ def create_app():
     app.register_blueprint(queries.blueprint)
     app.register_blueprint(reviews.blueprint)
     app.register_blueprint(search.blueprint)
+    app.register_blueprint(statistics.blueprint)
 
     return app

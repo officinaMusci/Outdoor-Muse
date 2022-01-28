@@ -24,8 +24,8 @@ import {
     {id: 'rating', label: 'Évaluation'},
 
     //{id: 'parent', label: 'Réponse à'}, 
-    {id: 'partner', label: 'Partenaire'},
-    {id: 'place', label: 'Randonnée'},
+    {id: 'partner_name', label: 'Partenaire'},
+    {id: 'place_name', label: 'Randonnée'},
   
     {id: 'delete', label: '', align: 'center'}
   ];
