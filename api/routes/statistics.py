@@ -109,8 +109,8 @@ def all():
         records.sort(key=lambda record: record.created)
         for record in records:
             over_time.append([
-                len(over_time) + 1,
-                record.created
+                record.created,
+                len(over_time) + 1
             ])
         
         return over_time

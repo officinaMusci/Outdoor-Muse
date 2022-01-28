@@ -71,7 +71,7 @@ export default function StatsPage() {
             </Grid>
             <Grid item xs={12} md={6}>
               <DataCard
-                count={Math.floor(allData.radius_mean / 1000) + ' km'}
+                count={Number(allData.radius_mean / 1000).toFixed(2) + ' km'}
                 description='Rayon max (μ)'
               />
               <Divider light sx={{mt: 1, mb: 1}} />

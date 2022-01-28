@@ -7,8 +7,12 @@ import {
   Grid,
   Typography,
   Divider,
-  Skeleton
+  Skeleton,
+  Paper
 } from '@mui/material';
+import {
+  Landscape as DecorativeIcon,
+} from '@mui/icons-material';
 
 import useApi from '../services/apiHook';
 import DataCard from '../components/DataCard';
@@ -42,49 +46,63 @@ export default function HomePage() {
 
   return (
     <>
-      <Typography
-        variant='h4'
-        align='center'
-        sx={{
-          color: theme.palette.secondary.contrastText,
-          textShadow: `0 0 3px ${theme.palette.grey[900]}`,
-          mt: 4
-        }}
-      >
-        {isLoading ?
-          <Skeleton
-            animation='wave'
-            sx={{
-              maxWidth: 200,
-              backgroundColor: 'rgba(255, 255, 255, .5)',
-              margin: 'auto'
-            }}
-          />
-          :
-          `${theme.custom.appName} :`
-        }
-      </Typography>
-      <Typography
-        variant='h2'
-        align='center'
-        sx={{
-          color: theme.palette.secondary.contrastText,
-          textShadow: `0 0 5px ${theme.palette.grey[800]}`,
-        }}
-      >
-        {isLoading ?
-          <Skeleton
-            animation='wave'
-            sx={{
-              maxWidth: 600,
-              backgroundColor: 'rgba(255, 255, 255, .5)',
-              margin: 'auto'
-            }}
-          />
-          :
-          'Une montagne de données'
-        }
-      </Typography>
+      <Paper sx={{
+        backgroundColor: 'rgba(0,0,0,.5)',
+        p: 5,
+        mt: 3,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}>
+        <DecorativeIcon
+          sx={{
+            fontSize: 100,
+            color: theme.palette.secondary.contrastText
+          }}
+        />
+        <Typography
+          variant='h4'
+          align='center'
+          sx={{
+            color: theme.palette.secondary.contrastText,
+            textShadow: `0 0 3px ${theme.palette.grey[900]}`
+          }}
+        >
+          {isLoading ?
+            <Skeleton
+              animation='wave'
+              sx={{
+                width: 200,
+                backgroundColor: 'rgba(255, 255, 255, .5)',
+                margin: 'auto'
+              }}
+            />
+            :
+            `${theme.custom.appName} :`
+          }
+        </Typography>
+        <Typography
+          variant='h2'
+          align='center'
+          sx={{
+            color: theme.palette.secondary.contrastText,
+            textShadow: `0 0 5px ${theme.palette.grey[800]}`,
+          }}
+        >
+          {isLoading ?
+            <Skeleton
+              animation='wave'
+              sx={{
+                width: 600,
+                backgroundColor: 'rgba(255, 255, 255, .5)',
+                margin: 'auto'
+              }}
+            />
+            :
+            'Une montagne de données'
+          }
+        </Typography>
+      </Paper>
       <Divider light sx={{ mt: 3, mb: 3 }} />
       <Grid container spacing={2}>
         {isLoading ?
