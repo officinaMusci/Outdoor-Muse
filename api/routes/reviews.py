@@ -2,6 +2,7 @@ import flask
 
 from utils import app
 from entities.review import Review
+from entities.user import User
 from entities.place import Place
 from entities.partner import Partner
 
@@ -32,6 +33,10 @@ def get():
         reviews = Review.get_all(request)
 
         for i, review in enumerate(reviews):
+            reviews[i].user_name = User.get_from_id(
+                review.user_id
+            ).name if review.user_id else None
+
             reviews[i].partner_name = Partner.get_from_id(
                 review.partner_id
             ).name if review.partner_id else None
@@ -39,6 +44,7 @@ def get():
             reviews[i].place_name = Place.get_from_id(
                 review.place_id
             ).name if review.place_id else None
+            
 
         return app.response(reviews)
     

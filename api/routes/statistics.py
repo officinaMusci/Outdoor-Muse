@@ -93,12 +93,17 @@ def all():
     
 
     radius_mean = statistics.mean([q.radius for q in all_queries])
+
     max_travel_mean = timedelta(seconds=statistics.mean([
         q.max_travel.total_seconds() for q in all_queries
     ]))
+    
     max_walk_mean = timedelta(seconds=statistics.mean([
         q.max_walk.total_seconds() for q in all_queries
     ]))
+
+    start_mean = None#statistics.mean([q.interval.start for q in all_queries])
+    end_mean = None#statistics.mean([q.interval.end for q in all_queries])
 
 
     def create_over_time(entity_class):
@@ -120,6 +125,8 @@ def all():
         'radius_mean': radius_mean,
         'max_travel_mean': max_travel_mean,
         'max_walk_mean': max_walk_mean,
+        'start_mean': start_mean,
+        'end_mean': end_mean,
         'over_time': {
             'users': create_over_time(User),
             'queries': create_over_time(Partner),

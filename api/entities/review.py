@@ -69,6 +69,10 @@ class Review:
     partner_id:int=None
     place_id:int=None
 
+    user_name:str=''
+    place_name:str=''
+    partner_name:str=''
+
     id:int=None
     created:datetime=None
     updated:datetime=None

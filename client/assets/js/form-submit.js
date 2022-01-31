@@ -213,7 +213,7 @@ $(document).ready(function () {
             inputs.prop("disabled", false);
             $(".loading").hide();
             $(".notLoading").show();
-            createResults(result.results);
+            createResults(result.result);
           }
           console.log(result);
         },

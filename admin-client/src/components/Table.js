@@ -143,7 +143,7 @@ const Table = props => {
       value = value.join(', ');
       value = value.charAt(0).toUpperCase() + value.slice(1);
 
-    } else if (typeof value === 'object') {
+    } else if (typeof value === 'object' && value) {
       value = 'lat ' + value.lat + ', lng ' + value.lng;
 
     } else if (

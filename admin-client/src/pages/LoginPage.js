@@ -103,7 +103,7 @@ export default function LoginPage() {
           width: '100%',
           maxWidth: 300,
           p: 2,
-          mt: 3
+          mt: 6
         }}
       >
         <Typography
