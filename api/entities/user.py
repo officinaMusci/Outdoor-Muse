@@ -8,6 +8,7 @@ from sqlalchemy import DateTime as ORMDateTime
 from sqlalchemy import Integer as ORMInteger
 from sqlalchemy import String as ORMString
 from sqlalchemy import Boolean as ORMBoolean
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from werkzeug import security
 import flask_jwt_extended as flask_jwt
@@ -24,8 +25,8 @@ class UserRow(database.Base):
     id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
     created = ORMColumn(ORMDateTime, default=datetime.utcnow)
     updated = ORMColumn(ORMDateTime, default=datetime.utcnow)
-    email = ORMColumn(ORMString(255), nullable=False)
-    password = ORMColumn(ORMString(255), nullable=False)
+    email = ORMColumn(ORMString(255))
+    password = ORMColumn(ORMString(255))
     confirmed = ORMColumn(ORMBoolean, default=False)
     role = ORMColumn(ORMString(255), default='user')
     name = ORMColumn(ORMString(255), nullable=True)
@@ -33,6 +34,7 @@ class UserRow(database.Base):
 
     queries = relationship('QueryRow')
     reviews = relationship('ReviewRow')
+    solutions = relationship('SolutionRow', cascade='delete')
 
 
 @dataclass

@@ -8,6 +8,7 @@ from sqlalchemy import Column as ORMColumn
 from sqlalchemy import String as ORMString
 from sqlalchemy import Integer as ORMInteger
 from sqlalchemy import Float as ORMFloat
+from sqlalchemy import Boolean as ORMBoolean
 from sqlalchemy import DateTime as ORMDateTime
 from sqlalchemy import Interval as ORMInterval
 from sqlalchemy import PickleType as ORMPickleType
@@ -30,17 +31,18 @@ class QueryRow(database.Base):
     id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
     created = ORMColumn(ORMDateTime, default=datetime.utcnow)
     updated = ORMColumn(ORMDateTime, default=datetime.utcnow)
-    location_lat = ORMColumn(ORMFloat, nullable=False)
-    location_lng = ORMColumn(ORMFloat, nullable=False)
+    location_lat = ORMColumn(ORMFloat)
+    location_lng = ORMColumn(ORMFloat)
     interval_start = ORMColumn(ORMDateTime)
     interval_end = ORMColumn(ORMDateTime)
-    radius = ORMColumn(ORMInteger, nullable=False)
-    types = ORMColumn(ORMPickleType, nullable=False)
+    radius = ORMColumn(ORMInteger)
+    types = ORMColumn(ORMPickleType)
     max_travel = ORMColumn(ORMInterval)
     max_walk = ORMColumn(ORMInterval)
     weather_ids = ORMColumn(ORMPickleType)
     max_results = ORMColumn(ORMInteger)
     language = ORMColumn(ORMString(5))
+    favorited = ORMColumn(ORMBoolean, default=False)
 
     user_id = ORMColumn(ORMInteger, ForeignKey('user.id'), nullable=True)
 
@@ -67,6 +69,7 @@ class Query:
         weather_ids: The forecasts accepted for the query.
         max_results: The maximum amount of results to get.
         language: The language to use in results.
+        favorited: If the user has set the query as a favorite.
         user_id: The user id of the author.
     '''
     location:Location
@@ -76,6 +79,7 @@ class Query:
     max_travel:timedelta
     max_walk:timedelta
     weather_ids:List[int]
+    favorited:bool=False
     max_results:int=10
     language:str=None
     
@@ -127,6 +131,7 @@ class Query:
             max_walk=timedelta(hours=randrange(2) + .5),
             weather_ids=weather_ids,
             max_results=10,
+            favorited=False,
             user_id=None
         )
 
@@ -164,6 +169,8 @@ class Query:
                 if 'max_results' in dictionary else cls.max_results,
             language=dictionary['language']
                 if 'language' in dictionary else cls.language,
+            favorited=dictionary['favorited']
+                if 'favorited' in dictionary else None,
             user_id=dictionary['user_id']
                 if 'user_id' in dictionary else None
         )
@@ -191,6 +198,7 @@ class Query:
             weather_ids=row.weather_ids,
             max_results=row.max_results,
             language=row.language,
+            favorited=row.favorited,
             user_id=row.user_id
         )
 
@@ -212,6 +220,7 @@ class Query:
             weather_ids=self.weather_ids,
             max_results=self.max_results,
             language=self.language,
+            favorited=self.favorited,
             user_id=self.user_id
         )
 
@@ -254,6 +263,7 @@ class Query:
                 query_row.weather_ids = self.weather_ids
                 query_row.max_results = self.max_results
                 query_row.language = self.language
+                query_row.favorited = self.favorited
                 query_row.user_id = self.user_id
 
                 db_session.flush()

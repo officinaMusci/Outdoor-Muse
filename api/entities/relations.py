@@ -11,8 +11,8 @@ class QueryPlaceRow(database.Base):
 
     id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
     
-    query_id = ORMColumn(ForeignKey('query.id'), nullable=False)
-    place_id = ORMColumn(ForeignKey('place.id'), nullable=False)
+    query_id = ORMColumn(ForeignKey('query.id'))
+    place_id = ORMColumn(ForeignKey('place.id'))
 
 
 class QueryPartnerRow(database.Base):
@@ -21,5 +21,15 @@ class QueryPartnerRow(database.Base):
 
     id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
     
-    query_id = ORMColumn(ForeignKey('query.id'), nullable=False)
-    partner_id = ORMColumn(ForeignKey('partner.id'), nullable=False)
+    query_id = ORMColumn(ForeignKey('query.id'))
+    partner_id = ORMColumn(ForeignKey('partner.id'))
+
+
+class SolutionPartnerRow(database.Base):
+    '''ORM association between solutions and suggested partners'''
+    __tablename__ = 'solution_partner_relation'
+
+    id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
+    
+    solution_id = ORMColumn(ForeignKey('solution.id'))
+    partner_id = ORMColumn(ForeignKey('partner.id'))

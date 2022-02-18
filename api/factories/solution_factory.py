@@ -118,7 +118,7 @@ class SolutionFactory:
         solutions = []
         for solution in self.solutions:
             solution.forecasts = weather.get_daily_forecasts(
-                location=solution.destination.location,
+                location=Place.get_from_id(solution.place_id).location,
                 interval=solution.interval
             )
             solutions.append(solution)

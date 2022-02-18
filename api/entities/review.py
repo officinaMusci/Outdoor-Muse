@@ -21,8 +21,8 @@ class ReviewRow(database.Base):
     id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
     created = ORMColumn(ORMDateTime, default=datetime.utcnow)
     updated = ORMColumn(ORMDateTime, default=datetime.utcnow)
-    comment = ORMColumn(ORMString(2550), nullable=False)
-    rating = ORMColumn(ORMInteger, nullable=False)
+    comment = ORMColumn(ORMString(2550))
+    rating = ORMColumn(ORMInteger)
     
     user_id = ORMColumn(ORMInteger, ForeignKey('user.id'), nullable=True)
     parent_id = ORMColumn(

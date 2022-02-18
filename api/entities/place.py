@@ -31,9 +31,9 @@ class PlaceRow(database.Base):
     id = ORMColumn(ORMInteger, primary_key=True, autoincrement=True)
     created = ORMColumn(ORMDateTime, default=datetime.utcnow)
     updated = ORMColumn(ORMDateTime, default=datetime.utcnow)
-    location_lat = ORMColumn(ORMFloat, nullable=False)
-    location_lng = ORMColumn(ORMFloat, nullable=False)
-    name = ORMColumn(ORMString(255), nullable=False)
+    location_lat = ORMColumn(ORMFloat)
+    location_lng = ORMColumn(ORMFloat)
+    name = ORMColumn(ORMString(255))
     difficulty = ORMColumn(ORMInteger)
     duration = ORMColumn(ORMInterval)
     distance = ORMColumn(ORMInteger)
@@ -41,6 +41,7 @@ class PlaceRow(database.Base):
 
     query_relations = relationship('QueryPlaceRow', cascade='delete')
     reviews = relationship('ReviewRow', cascade='delete')
+    solutions = relationship('SolutionRow', cascade='delete')
 
 
 @dataclass
