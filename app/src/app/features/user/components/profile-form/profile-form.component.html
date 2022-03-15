@@ -1,0 +1,48 @@
+<form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    <ion-grid>
+        <ion-row>
+            <ion-col sizeXs="12" size="6">
+                <ion-item>
+                    <ion-label position="floating">Adresse e-mail</ion-label>
+                    <ion-input type="email" formControlName="email"></ion-input>
+                </ion-item>
+            </ion-col>
+            <ion-col sizeXs="12" size="6" *ngIf="profileForm?.get('email')?.value != authService.userSessionData?.email">
+                <ion-item class="ion-margin-bottom">
+                    <ion-label position="floating" color="warning">Répéter l'adresse e-mail</ion-label>
+                    <ion-input type="email" formControlName="emailRepeat"></ion-input>
+                </ion-item>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col sizeXs="12" size="6">
+                <ion-item>
+                    <ion-label position="floating">Mot de passe</ion-label>
+                    <ion-input type="password" formControlName="password"></ion-input>
+                </ion-item>
+            </ion-col>
+            <ion-col sizeXs="12" size="6" *ngIf="profileForm?.get('password')?.value">
+                <ion-item class="ion-margin-bottom">
+                    <ion-label position="floating" color="warning">Répéter le mot de passe</ion-label>
+                    <ion-input type="password" formControlName="passwordRepeat"></ion-input>
+                </ion-item>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col size="12">
+                <ion-item>
+                    <ion-label position="floating">Nom complet</ion-label>
+                    <ion-input formControlName="name"></ion-input>
+                </ion-item>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col size="12">
+                <ion-button expand="block" type="submit">
+                    <ion-icon slot="end" name="save-outline"></ion-icon>
+                    Sauvegarder
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</form>

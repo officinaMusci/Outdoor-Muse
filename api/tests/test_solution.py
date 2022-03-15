@@ -41,7 +41,7 @@ class TestSolution(unittest.TestCase):
         '''Initialize the test'''
         self.db_path = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
-            'est_ssolution.sqlite'
+            'test_solution.sqlite'
         )
 
         self.delete_db()

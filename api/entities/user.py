@@ -171,7 +171,7 @@ class User:
             with database.create_session().begin() as db_session:
                 user_row = db_session.query(UserRow).get(self.id)
 
-                if self.password != user_row.password:
+                if self.password and not self.check_password(user_row.password):
                     self.password = security.generate_password_hash(
                         self.password
                     )
@@ -180,12 +180,12 @@ class User:
                     self.confirmed = False
 
                 user_row.updated = datetime.utcnow()
-                user_row.email = self.email
-                user_row.password = self.password
-                user_row.confirmed = self.confirmed
-                user_row.role = self.role
-                user_row.name = self.name
-                user_row.points = self.points
+                user_row.email = self.email or user_row.email
+                user_row.password = self.password or user_row.password
+                user_row.confirmed = self.confirmed or user_row.confirmed
+                user_row.role = self.role or user_row.role
+                user_row.name = self.name or user_row.name
+                user_row.points = self.points or user_row.points
 
                 db_session.flush()
             

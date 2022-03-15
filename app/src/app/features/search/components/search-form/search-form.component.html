@@ -1,0 +1,113 @@
+<form [formGroup]="searchForm" (ngSubmit)="onSubmit()">
+    <ion-grid>
+        <ion-row formGroupName="location">
+            <ion-col size="5">
+                <ion-item>
+                    <ion-label position="floating">Latitude</ion-label>
+                    <ion-input type="number" formControlName="lat"></ion-input>
+                </ion-item>
+            </ion-col>
+            <ion-col size="5">
+                <ion-item>
+                    <ion-label position="floating">Longitude</ion-label>
+                    <ion-input type="number" formControlName="lng"></ion-input>
+                </ion-item>
+            </ion-col>
+            <ion-col size="1" offset="1">
+                <ion-button shape="circle" (click)="localize()">
+                    <ion-icon slot="icon-only" name="location"></ion-icon>
+                </ion-button>
+            </ion-col>
+        </ion-row>
+
+        <ion-row formGroupName="interval">
+            <ion-col size="6">
+                <ion-item id="open-start-input">
+                    <ion-label position="floating">Départ</ion-label>
+                    <ion-input
+                        formControlName="start"
+                    ></ion-input>
+                    <ion-popover trigger="open-start-input" show-backdrop="false">
+                        <ng-template>
+                            <ion-datetime
+                                #startPopoverDatetime
+                                locale="fr-FR"
+                                presentation="time-date"
+                                (ionChange)="searchForm?.get('interval')?.get('start')?.setValue(formatDate(startPopoverDatetime.value))"
+                            ></ion-datetime>
+                        </ng-template>
+                    </ion-popover>
+                </ion-item>
+            </ion-col>
+            <ion-col size="6">
+                <ion-item id="open-end-input">
+                    <ion-label position="floating">Retour</ion-label>
+                    <ion-input
+                        formControlName="end"
+                    ></ion-input>
+                    <ion-popover trigger="open-end-input" show-backdrop="false">
+                        <ng-template>
+                            <ion-datetime
+                                #endPopoverDatetime
+                                locale="fr-FR"
+                                presentation="time-date"
+                                (ionChange)="searchForm?.get('interval')?.get('end')?.setValue(formatDate(endPopoverDatetime.value))"
+                            ></ion-datetime>
+                        </ng-template>
+                    </ion-popover>
+                </ion-item>
+            </ion-col>
+        </ion-row>
+
+        <ion-row>
+            <ion-col size="6">
+                <ion-item>
+                    <ion-label position="floating">Rayon de recherche maximum</ion-label>
+                    <ion-range
+                        min="5"
+                        max="500"
+                        step="5"
+                        formControlName="radius"
+                    >
+                        <ion-label slot="start">{{searchForm?.get('radius')?.value}} km</ion-label>
+                    </ion-range>
+                  </ion-item>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col size="6">
+                <ion-item>
+                    <ion-label position="floating">Trajet en transports maximum</ion-label>
+                    <ion-range
+                        min="300000"
+                        max="21600000"
+                        step="300000"
+                        formControlName="max_travel"
+                    >
+                        <ion-label slot="start">{{searchForm?.get('max_travel')?.value|date:'HH:mm'}}</ion-label>
+                    </ion-range>
+                  </ion-item>
+            </ion-col>
+            <ion-col size="6">
+                <ion-item>
+                    <ion-label position="floating">Trajet à pieds maximum</ion-label>
+                    <ion-range
+                        min="300000"
+                        max="21600000"
+                        step="300000"
+                        formControlName="max_walk"
+                    >
+                        <ion-label slot="start">{{searchForm?.get('max_walk')?.value|date:'HH:mm'}}</ion-label>
+                    </ion-range>
+                  </ion-item>
+            </ion-col>
+        </ion-row>
+
+        <ion-row>
+            <ion-col>
+                <ion-button type="submit">Envoyer</ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+</form>

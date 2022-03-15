@@ -1,0 +1,9 @@
+<app-header [hasBackButton]="true" title="Inscription" defaultHref="/user"></app-header>
+
+<ion-content>
+    <app-registration-form></app-registration-form>
+    <a [ngStyle]="{
+        'text-align': 'center',
+        'display': 'block'
+    }" [routerLink]="['/user/login']">Ou effectuer l'accès</a>
+</ion-content>

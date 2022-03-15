@@ -37,7 +37,7 @@ def get():
 
 
 @blueprint.route('/<user_id>', methods=['GET', 'DELETE', 'PUT'])
-@app.jwt_required(roles=['admin'])
+@app.jwt_required()
 def get_one(user_id):
     '''The API route to get, delete or update a user.
     
@@ -49,7 +49,13 @@ def get_one(user_id):
         401 response: Unauthorized if the request has not the JWT.
         403 response: Forbidden if the user hasn't one of the required roles.
     '''
+    user_id = int(user_id)
+
+    current_user = User.get_from_access_token()
     user = User.get_from_id(user_id)
+
+    if current_user.id != user_id and current_user.role != 'admin':
+        flask.abort(403)
 
     if flask.request.method == 'GET':
         return app.response(user)

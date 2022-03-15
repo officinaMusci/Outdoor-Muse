@@ -7,6 +7,7 @@ from entities.place import Place
 from entities.partner import Partner
 from entities.query import Query
 from entities.review import Review
+from entities.solution import SolutionRow
 
 from utils import time
 from services import database

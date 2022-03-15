@@ -1,0 +1,9 @@
+<app-header title="Accès"></app-header>
+
+<ion-content>
+    <app-login-form></app-login-form>
+    <a [ngStyle]="{
+        'text-align': 'center',
+        'display': 'block'
+    }" [routerLink]="['/user/register']">Ou créer un compte</a>
+</ion-content>

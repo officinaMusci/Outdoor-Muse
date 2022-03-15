@@ -11,6 +11,30 @@ blueprint = flask.Blueprint(
 )
 
 
+@blueprint.route('/register', methods=['POST'])
+def register():
+    '''The API route to register a new user.
+    
+    RETURNS:
+        response: The JSON response containing the access token.
+    
+    RAISES:
+        400 response: Bad request if some request keys have not been found.
+    '''
+    request = app.get_request(required_keys=['email', 'password', 'name'])
+
+    user = User.from_dict(request)
+    user.save()
+
+    return app.response({
+        'id': user.id,
+        'token': user.create_access_token(),
+        'email': user.email,
+        'name': user.name,
+        'points': user.points
+    })
+
+
 @blueprint.route('/login', methods=['POST'])
 def login():
     '''The API route to get do the login.
@@ -32,4 +56,10 @@ def login():
     if not user:
         flask.abort(401)
     
-    return app.response(user.create_access_token())
+    return app.response({
+        'id': user.id,
+        'token': user.create_access_token(),
+        'email': user.email,
+        'name': user.name,
+        'points': user.points
+    })

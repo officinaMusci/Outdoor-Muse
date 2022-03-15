@@ -1,0 +1,26 @@
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <ion-grid>
+        <ion-row>
+            <ion-col sizeXs="12" size="6">
+                <ion-item>
+                    <ion-label position="floating">Adresse e-mail</ion-label>
+                    <ion-input type="email" formControlName="email" [required]="true"></ion-input>
+                </ion-item>
+            </ion-col>
+            <ion-col sizeXs="12" size="6">
+                <ion-item>
+                    <ion-label position="floating">Mot de passe</ion-label>
+                    <ion-input type="password" formControlName="password" [required]="true"></ion-input>
+                </ion-item>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col size="12">
+                <ion-button expand="block" type="submit">
+                    <ion-icon slot="end" name="log-in-outline"></ion-icon>
+                    Accéder
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</form>

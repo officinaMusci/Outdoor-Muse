@@ -22,7 +22,7 @@ export const AuthProvider = props => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!token);
 
   const handleSetIsAuthenticated = async state => {
-    state = await state;
+    state = await state.token;
 
     if (typeof state === 'string') {
       sessionStorage.setItem(tokenName, state);
