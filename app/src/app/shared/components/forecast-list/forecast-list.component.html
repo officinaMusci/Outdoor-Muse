@@ -1,0 +1,18 @@
+<ion-list>
+    <ion-item *ngFor="let forecast of forecasts">
+        <ion-avatar slot="start">
+            <img [src]="'http://openweathermap.org/img/wn/' + forecast.weather[0].icon + '@2x.png'">
+        </ion-avatar>
+        <ion-label>
+            <h3>{{forecast.datetime|date: 'dd.MM.YYYY'}}</h3>
+            <p>{{forecast.weather[0].description}}</p>
+        </ion-label>
+        <div slot="end">
+            <div>
+                <ion-badge color="light" class="ion-margin-end">{{forecast.temperatures.day}} °C</ion-badge>
+                <ion-badge color="light">{{forecast.humidity}} %</ion-badge>
+            </div>
+            <ion-badge color="light">Vent : {{(forecast.wind_speed * 3.6)|number: '1.2-2'}} km/h</ion-badge>
+        </div>
+    </ion-item>
+</ion-list>

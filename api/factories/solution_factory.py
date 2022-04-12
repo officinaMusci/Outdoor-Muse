@@ -71,8 +71,10 @@ class SolutionFactory:
 
             if (outward_itinerary and return_itinerary):
                 solution = Solution(
+                    query_id=query.id,
+                    user_id=query.user_id,
                     start_location=query.location,
-                    destination=place,
+                    place_id=place.id,
                     interval=Interval(
                         start=query.interval.start,
                         end=query.interval.end

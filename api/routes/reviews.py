@@ -1,4 +1,5 @@
 import flask
+import flask_jwt_extended as flask_jwt
 
 from utils import app
 from entities.review import Review
@@ -15,7 +16,7 @@ blueprint = flask.Blueprint(
 
 
 @blueprint.route('', methods=['GET', 'POST'])
-@app.jwt_required(roles=['admin'])
+@app.jwt_required()
 def get():
     '''The API route to get or create the reviews.
     
@@ -24,8 +25,6 @@ def get():
     
     RAISES:
         400 response: Bad request if some request keys have not been found.
-        401 response: Unauthorized if the request has not the JWT.
-        403 response: Forbidden if the review hasn't one of the required roles.
     '''
     request = app.get_request()
 
@@ -49,13 +48,47 @@ def get():
         return app.response(reviews)
     
     elif flask.request.method == 'POST':
+        user = User.get_from_access_token()
+
+        request['user_id'] = user.id
         review = Review.from_dict(request)
         review.save()
+
+        user.points += 10
+        user.save()
+
         return app.response(review)
 
 
+@blueprint.route('/place/<place_id>', methods=['GET'])
+def get_for_place(place_id):
+    '''The API route to get reviews for a place
+    
+    RETURNS:
+        response: The JSON response containing the reviews.
+    '''
+    reviews = Review.get_all({'place_id': place_id})
+    return app.response(reviews)
+
+
+@blueprint.route('/user_place/<place_id>', methods=['GET'])
+@app.jwt_required()
+def get_for_place_with_jwt(place_id):
+    '''The API route to get user review for a place
+    
+    RETURNS:
+        response: The JSON response containing the reviews.
+    '''
+    reviews = Review.get_all({
+        'place_id': place_id,
+        'user_id': User.get_from_access_token().id
+    })
+
+    return app.response(reviews[0] if len(reviews) else None)
+
+
 @blueprint.route('/<review_id>', methods=['GET', 'DELETE', 'PUT'])
-@app.jwt_required(roles=['admin'])
+@app.jwt_required()
 def get_one(review_id):
     '''The API route to get, delete or update a review.
     

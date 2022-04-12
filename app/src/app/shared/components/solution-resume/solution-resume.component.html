@@ -1,0 +1,45 @@
+<table class="table row-lines">
+    <thead>
+    <tr>
+        <th scope="col"></th>
+        <th scope="col">Départ</th>
+        <th scope="col" class="table-dark bg-primary">Marche</th>
+        <th scope="col" class="table-dark bg-secondary">Transports</th>
+        <th scope="col">Arrivée</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th scope="row">Aller</th>
+        <td>{{solution?.outward_itinerary?.interval?.start|date: 'dd.MM.yy, H:mm': 'Europe/Zurich'}}</td>
+        <td class="table-dark bg-primary">{{solution?.outward_itinerary?.walk_duration|duration: 'HH:MM'}}</td>
+        <td class="table-dark bg-secondary">{{solution?.outward_itinerary?.travel_duration|duration: 'HH:MM'}}</td>
+        <td>{{solution?.outward_itinerary?.interval?.end|date: 'dd.MM.yy, H:mm': 'Europe/Zurich'}}</td>
+    </tr>
+    <tr>
+        <th scope="row">Retour</th>
+        <td>{{solution?.return_itinerary?.interval?.start|date: 'dd.MM.yy, H:mm': 'Europe/Zurich'}}</td>
+        <td class="table-dark bg-primary">{{solution?.return_itinerary?.walk_duration|duration: 'HH:MM'}}</td>
+        <td class="table-dark bg-secondary">{{solution?.return_itinerary?.travel_duration|duration: 'HH:MM'}}</td>
+        <td>{{solution?.return_itinerary?.interval?.end|date: 'dd.MM.yy, H:mm': 'Europe/Zurich'}}</td>
+    </tr>
+    </tbody>
+</table>
+<table class="table">
+    <thead>
+    </thead>
+    <tbody>
+    <tr>
+        <th scope="row">Difficulté</th>
+        <td>{{solution?.place?.difficulty}}</td>
+    </tr>
+    <tr>
+        <th scope="row" class="bg-success">Temps de randonnée</th>
+        <td class="bg-success">{{solution?.place?.duration|duration: 'HH:MM'}}</td>
+    </tr>
+    <tr>
+        <th scope="row" class="table-dark bg-warning">Temps libre</th>
+        <td class="table-dark bg-warning">{{solution?.info?.free_time}}</td>
+    </tr>
+    </tbody>
+</table>

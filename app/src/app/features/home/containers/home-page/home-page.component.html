@@ -1,5 +1,44 @@
 <app-header title="Accueil"></app-header>
 
-<ion-content>
-    
+<ion-content *ngIf="isLoggedIn else notLoggedIn">
+    <ion-card>
+        <ion-card-header>
+            <ion-card-subtitle>{{user?.points}} points</ion-card-subtitle>
+            <ion-card-title>{{user?.name}}</ion-card-title>
+        </ion-card-header>
+    </ion-card>
+    <ion-title
+        class="ion-text-center ion-margin-top ion-padding-vertical"
+    >Mes randonnées</ion-title>
+    <app-home-solutions
+        [solutions]="solutions"
+        [userReviews]="userReviews"
+    ></app-home-solutions>
 </ion-content>
+
+
+<ng-template #notLoggedIn>
+    <ion-grid>
+        <ion-row>
+            <ion-col>
+                <p
+                    class="ion-text-center ion-padding-top ion-margin-top"
+                >
+                    <ion-icon
+                        color="primary"
+                        name="walk"
+                        style="font-size: 5rem;"
+                    ></ion-icon>
+                </p>
+                <h2
+                    class="ion-text-center ion-margin-top"
+                    style="color: var(--ion-color-medium)"
+                >Outdoor Muse</h2>
+                <p
+                    class="ion-text-center"
+                    style="color: var(--ion-color-medium)"
+                >Bienvenue sur Outdoor Muse, le site de référence pour les randonnées en Suisse !</p>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ng-template>

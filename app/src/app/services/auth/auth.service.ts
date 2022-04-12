@@ -79,17 +79,18 @@ export class AuthService {
     }
   }
 
-  checkAuth(): boolean  {
+  checkAuth(unauthenticate=true): boolean  {
     const token = this.getToken();
     const id = this.getId();
 
     if (token && id) {
       return true;
     
-    } else {
+    } else if (unauthenticate) {
       this.unauthenticate(false);
-      return false
     }
+
+    return false
   }
 
   async authenticate(

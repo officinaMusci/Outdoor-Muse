@@ -9,13 +9,15 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SearchService } from './services/search/search.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { IonicModule } from '@ionic/angular';
+import { SearchDetailComponent } from './containers/search-detail/search-detail.component';
 
 
 @NgModule({
   declarations: [
     SearchPageComponent,
     SearchFormComponent,
-    SearchResultsComponent
+    SearchResultsComponent,
+    SearchDetailComponent
   ],
   imports: [
     CommonModule,

@@ -1,0 +1,11 @@
+<google-map
+    *ngIf="options"
+    height="400px"
+    width="100%"
+    [options]="options"
+>
+    <map-directions-renderer
+        *ngIf="directions"
+        [directions]="directions"
+    ></map-directions-renderer>
+</google-map>

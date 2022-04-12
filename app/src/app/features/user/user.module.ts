@@ -5,8 +5,6 @@ import { UserRoutingModule } from './user-routing.module';
 import { RegisterPageComponent } from './containers/register-page/register-page.component';
 import { LoginPageComponent } from './containers/login-page/login-page.component';
 import { ProfilePageComponent } from './containers/profile-page/profile-page.component';
-import { PlacesPageComponent } from './containers/places-page/places-page.component';
-import { ReviewsPageComponent } from './containers/reviews-page/reviews-page.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { IonicModule } from '@ionic/angular';
@@ -20,8 +18,6 @@ import { ProfileFormComponent } from './components/profile-form/profile-form.com
     RegisterPageComponent,
     LoginPageComponent,
     ProfilePageComponent,
-    PlacesPageComponent,
-    ReviewsPageComponent,
     LoginFormComponent,
     RegistrationFormComponent,
     ProfileFormComponent

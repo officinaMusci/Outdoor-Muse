@@ -9,6 +9,7 @@ from sqlalchemy import String as ORMString
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
+from entities.user import User
 from services import database
 from utils import time
 from utils.faker import faker
@@ -70,12 +71,16 @@ class Review:
     place_id:int=None
 
     user_name:str=''
-    place_name:str=''
-    partner_name:str=''
 
     id:int=None
     created:datetime=None
     updated:datetime=None
+
+
+    def __post_init__(self):
+        '''Get additional data from database relations'''
+        if self.user_id:
+            self.user_name = User.get_from_id(self.user_id).name
 
 
     @classmethod

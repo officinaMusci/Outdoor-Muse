@@ -1,20 +1,28 @@
 <form [formGroup]="searchForm" (ngSubmit)="onSubmit()">
     <ion-grid>
         <ion-row formGroupName="location">
-            <ion-col size="5">
+            <ion-col sizeXs="10" size="5">
                 <ion-item>
                     <ion-label position="floating">Latitude</ion-label>
-                    <ion-input type="number" formControlName="lat"></ion-input>
+                    <ion-input
+                        type="number"
+                        formControlName="lat"
+                        [required]="true"
+                    ></ion-input>
                 </ion-item>
             </ion-col>
-            <ion-col size="5">
+            <ion-col sizeXs="10" size="5">
                 <ion-item>
                     <ion-label position="floating">Longitude</ion-label>
-                    <ion-input type="number" formControlName="lng"></ion-input>
+                    <ion-input
+                        type="number"
+                        formControlName="lng"
+                        [required]="true"
+                    ></ion-input>
                 </ion-item>
             </ion-col>
-            <ion-col size="1" offset="1">
-                <ion-button shape="circle" (click)="localize()">
+            <ion-col sizeXs="2" size="1" offsetXs="0" offset="1">
+                <ion-button size="small" shape="circle" (click)="localize()">
                     <ion-icon slot="icon-only" name="location"></ion-icon>
                 </ion-button>
             </ion-col>
@@ -25,7 +33,8 @@
                 <ion-item id="open-start-input">
                     <ion-label position="floating">Départ</ion-label>
                     <ion-input
-                        formControlName="start"
+                        [value]="searchForm?.get('interval')?.get('start')?.value|date: 'dd.MM.Y, H:mm': 'Europe/Zurich'"
+                        [required]="true"
                     ></ion-input>
                     <ion-popover trigger="open-start-input" show-backdrop="false">
                         <ng-template>
@@ -33,7 +42,10 @@
                                 #startPopoverDatetime
                                 locale="fr-FR"
                                 presentation="time-date"
-                                (ionChange)="searchForm?.get('interval')?.get('start')?.setValue(formatDate(startPopoverDatetime.value))"
+                                [min]="minStart"
+                                [max]="maxStart"
+                                [value]="searchForm?.get('interval')?.get('start')?.value|date: 'Y-MM-ddTHH:mm:ss.SSS': 'Europe/Zurich'"
+                                (ionBlur)="searchForm?.get('interval')?.get('start')?.setValue(startPopoverDatetime.value)"
                             ></ion-datetime>
                         </ng-template>
                     </ion-popover>
@@ -43,7 +55,8 @@
                 <ion-item id="open-end-input">
                     <ion-label position="floating">Retour</ion-label>
                     <ion-input
-                        formControlName="end"
+                        [value]="searchForm?.get('interval')?.get('end')?.value|date: 'dd.MM.Y, H:mm': 'Europe/Zurich'"
+                        [required]="true"
                     ></ion-input>
                     <ion-popover trigger="open-end-input" show-backdrop="false">
                         <ng-template>
@@ -51,7 +64,10 @@
                                 #endPopoverDatetime
                                 locale="fr-FR"
                                 presentation="time-date"
-                                (ionChange)="searchForm?.get('interval')?.get('end')?.setValue(formatDate(endPopoverDatetime.value))"
+                                [min]="minEnd"
+                                [max]="maxEnd"
+                                [value]="searchForm?.get('interval')?.get('end')?.value|date: 'Y-MM-ddTHH:mm:ss.SSS': 'Europe/Zurich'"
+                                (ionBlur)="searchForm?.get('interval')?.get('end')?.setValue(endPopoverDatetime.value)"
                             ></ion-datetime>
                         </ng-template>
                     </ion-popover>
@@ -60,52 +76,103 @@
         </ion-row>
 
         <ion-row>
-            <ion-col size="6">
+            <ion-col sizeXs="12" size="6">
                 <ion-item>
-                    <ion-label position="floating">Rayon de recherche maximum</ion-label>
+                    <ion-label [ngStyle]="{overflow: 'visible'}" position="floating">Rayon de recherche maximum</ion-label>
                     <ion-range
+                        class="ion-margin-top"
                         min="5"
                         max="500"
                         step="5"
                         formControlName="radius"
+                        [required]="true"
                     >
                         <ion-label slot="start">{{searchForm?.get('radius')?.value}} km</ion-label>
                     </ion-range>
                   </ion-item>
             </ion-col>
         </ion-row>
+
         <ion-row>
-            <ion-col size="6">
+            <ion-col sizeXs="12" size="6">
                 <ion-item>
-                    <ion-label position="floating">Trajet en transports maximum</ion-label>
+                    <ion-label [ngStyle]="{overflow: 'visible'}" position="floating">Trajet en transports maximum</ion-label>
                     <ion-range
+                        class="ion-margin-top"
                         min="300000"
-                        max="21600000"
+                        max="57600000"
                         step="300000"
                         formControlName="max_travel"
+                        [required]="true"
                     >
-                        <ion-label slot="start">{{searchForm?.get('max_travel')?.value|date:'HH:mm'}}</ion-label>
+                        <ion-label slot="start">{{searchForm?.get('max_travel')?.value|date:'H:mm':'UTC'}}</ion-label>
                     </ion-range>
                   </ion-item>
             </ion-col>
-            <ion-col size="6">
+            <ion-col sizeXs="12" size="6">
                 <ion-item>
-                    <ion-label position="floating">Trajet à pieds maximum</ion-label>
+                    <ion-label [ngStyle]="{overflow: 'visible'}" position="floating">Trajet à pieds maximum</ion-label>
                     <ion-range
+                        class="ion-margin-top"
                         min="300000"
-                        max="21600000"
+                        max="28800000"
                         step="300000"
                         formControlName="max_walk"
+                        [required]="true"
                     >
-                        <ion-label slot="start">{{searchForm?.get('max_walk')?.value|date:'HH:mm'}}</ion-label>
+                        <ion-label slot="start">{{searchForm?.get('max_walk')?.value|date:'H:mm':'UTC'}}</ion-label>
                     </ion-range>
                   </ion-item>
             </ion-col>
         </ion-row>
 
+        <ion-row formGroupName="weather_ids">
+            <ion-col>
+                <ion-accordion-group >
+                    <ion-accordion>
+                        <ion-item slot="header">
+                            <ion-label>Météo</ion-label>
+                        </ion-item>
+
+                        <ion-list slot="content">
+                            <ion-item *ngFor="let entry of weatherList">
+                                <ion-label>{{entry.label}}</ion-label>
+                                <ion-checkbox
+                                    slot="start"
+                                    [formControlName]="entry.value"
+                                    [checked]="searchForm?.get('weather_ids')?.get(entry.value)?.value"
+                                ></ion-checkbox>
+                            </ion-item>
+                        </ion-list>
+                    </ion-accordion>
+                </ion-accordion-group>
+            </ion-col>
+        </ion-row>
+
         <ion-row>
             <ion-col>
-                <ion-button type="submit">Envoyer</ion-button>
+                <ion-button
+                    *ngIf="isLoggedIn && (!favoriteQueriesLength || !searchForm.pristine) && searchForm.valid"
+                    color="secondary"
+                    expand="block"
+                    (click)="saveSearchForm()"
+                >
+                    <ion-icon
+                        slot="end"
+                        name="save"
+                    ></ion-icon>
+                    Enregistrer la recherche
+                </ion-button>
+                <ion-button
+                    type="submit"
+                    expand="block"
+                >
+                    <ion-icon
+                        slot="end"
+                        name="search-outline"
+                    ></ion-icon>
+                    Lancer la recherche
+                </ion-button>
             </ion-col>
         </ion-row>
     </ion-grid>

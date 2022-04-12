@@ -1,1 +1,58 @@
-<p>search-results works!</p>
+<ion-list
+    *ngIf="solutions.length"
+    class="ion-no-padding"
+>
+    <ion-item
+        class="ion-no-padding"
+        *ngFor="let solution of solutions.slice(0, length)"
+        button [routerLink]="solution.id|json"
+    >
+        <ion-label class="ion-padding-horizontal ion-margin-bottom">
+            {{solution.place?.name}}
+        </ion-label>
+        
+        <ion-icon
+            color="secondary"
+            class="ion-margin-bottom"
+            name="footsteps"
+            slot="end"
+        ></ion-icon>
+        
+        <app-step-bar
+            outwardTravelDuration="{{ solution.outward_itinerary.travel_duration }}"
+            outwardWalkDuration="{{ solution.outward_itinerary.walk_duration }}"
+            destinationDuration="{{ solution.place?.duration }}"
+            freeTimeDuration="{{ solution.info.free_time }}"
+            returnWalkDuration="{{ solution.return_itinerary.walk_duration }}"
+            returnTravelDuration="{{ solution.return_itinerary.travel_duration }}"
+            totalTripDuration="{{ solution.info.total_trip_duration }}"
+        ></app-step-bar>
+    </ion-item>
+</ion-list>
+
+
+<ion-infinite-scroll
+    threshold="50px"
+    (ionInfinite)="loadData($event)"
+>
+    <ion-infinite-scroll-content
+        loadingSpinner="bubbles"
+    ></ion-infinite-scroll-content>
+</ion-infinite-scroll>
+
+
+<ng-template #noSolutions>
+    <ion-list
+        class="ion-no-padding"
+    >
+        <ion-item
+            class="ion-no-padding"
+        >
+            <ion-label class="ion-padding-horizontal">
+                Aucune solution trouvée
+            </ion-label>
+            
+            <ion-icon color="warning" name="footsteps" slot="end"></ion-icon>
+        </ion-item>
+    </ion-list> 
+</ng-template>

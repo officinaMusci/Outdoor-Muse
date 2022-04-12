@@ -1,0 +1,18 @@
+<ion-list>
+    <ion-item *ngFor="let partner of partners">
+        <ion-avatar slot="start">
+            <img [src]="'https://ui-avatars.com/api/?name=' + partner.name">
+        </ion-avatar>
+        <ion-label>
+            <h3>{{partner.name}}</h3>
+            <p>{{partner.types.join(', ')}}</p>
+            <p>
+                <ion-icon
+                    *ngFor="let star of partner.average_rating|counter"
+                    color="warning"
+                    name="star"
+                ></ion-icon>
+            </p>
+        </ion-label>
+    </ion-item>
+</ion-list>

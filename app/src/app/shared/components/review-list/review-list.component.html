@@ -1,0 +1,18 @@
+<ion-list>
+    <ion-item *ngFor="let review of reviews">
+        <ion-avatar slot="start">
+            <img [src]="'https://ui-avatars.com/api/?name=' + review.user_name">
+        </ion-avatar>
+        <ion-label>
+            <h3>{{review.user_name}}, {{review.created|date: 'dd.MM.YYYY'}}</h3>
+            <p>{{review.comment}}</p>
+            <p>
+                <ion-icon
+                    *ngFor="let star of review.rating|counter"
+                    color="warning"
+                    name="star"
+                ></ion-icon>
+            </p>
+        </ion-label>
+    </ion-item>
+</ion-list>

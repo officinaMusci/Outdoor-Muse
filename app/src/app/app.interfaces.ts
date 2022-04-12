@@ -1,20 +1,20 @@
 export interface ApiResponseInterface<T> { // <T[]> if a list is expected
   result?: T;
   error?: {
-    type: string | number,
-    message: string
+    type: string | number;
+    message: string;
   };
 }
 
 export interface LocationInterface {
-  lat: number,
-  lng: number
+  lat: number;
+  lng: number;
 }
 
 export interface IntervalInterFace {
-  start: Date,
-  end: Date,
-  duration?: number
+  start: string;
+  end: string;
+  duration?: string;
 }
 
 export interface TemperaturesInterface {
@@ -70,13 +70,17 @@ export interface StepInterface {
 }
 
 export interface ItineraryInterface {
+  bounds: {
+    northeast: LocationInterface;
+    southwest: LocationInterface;
+  }
+
   start_location: LocationInterface;
   end_location: LocationInterface;
   interval: IntervalInterFace;
   distance: number;
-  steps: StepInterface[];
-  walk_duration: number;
-  travel_duration: number;
+  walk_duration: string;
+  travel_duration: string;
 }
 
 export interface databaseInterface {
@@ -86,9 +90,9 @@ export interface databaseInterface {
 }
 
 export interface SolutionInfoInterface {
-  walk_duration: number;
-  travel_duration: number;
-  total_trip_duration: number;
+  walk_duration: string;
+  travel_duration: string;
+  total_trip_duration: string;
   free_time: number;
 }
 
@@ -97,11 +101,13 @@ export interface SolutionInterface extends databaseInterface {
   query_id: number;
   place_id?: number;
   user_id?: number;
-  interval: number;
+  interval: IntervalInterFace;
   outward_itinerary: ItineraryInterface;
   return_itinerary: ItineraryInterface;
   forecasts: ForecastInterface[];
   info: SolutionInfoInterface;
+
+  place?: PlaceInterface;
 }
 
 export interface PartnerInterface extends databaseInterface {
@@ -117,7 +123,7 @@ export interface PlaceInterface extends databaseInterface {
   location: LocationInterface;
   name: string;
   difficulty?: number;
-  duration?: number;
+  duration?: string;
   distance?: number;
   types?: string[];
   review_count: number;
@@ -130,8 +136,8 @@ export interface QueryInterface extends databaseInterface {
   interval: IntervalInterFace;
   radius: number;
   types: string[];
-  max_travel: number;
-  max_walk: number;
+  max_travel: number | string;
+  max_walk: number | string;
   weather_ids: number[];
   max_results: number;
   language?: string;
@@ -146,6 +152,10 @@ export interface ReviewInterface extends databaseInterface {
   parent_id?: number;
   partner_id?: number;
   place_id?: number;
+
+  user_name?: string;
+  place_name?: string;
+  partner_name?: string;
 }
 
 export interface UserInterface extends databaseInterface {

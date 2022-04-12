@@ -1,10 +1,25 @@
 <app-header title="Recherche">
-    <ion-button>
+    <ion-button (click)="toggleAccordion()">
         <ion-icon slot="icon-only" name="options"></ion-icon>
     </ion-button>
 </app-header>
 
 <ion-content>
-    <app-search-form></app-search-form>
-    <app-search-results></app-search-results>
+    <ion-accordion-group value="form">
+        <ion-accordion value="form">
+            <app-search-form
+                slot="content"
+                *ngIf="favoriteQueries$|async as favoriteQueries"
+                [favoriteQueries]="favoriteQueries"
+                (submitted)="toggleAccordion()"
+            ></app-search-form>
+        </ion-accordion>
+        <ion-accordion value="results">
+            <app-search-results
+                slot="content"
+                *ngIf="solutions$|async as solutions"
+                [solutions]="solutions"
+            ></app-search-results>
+        </ion-accordion>
+    </ion-accordion-group>
 </ion-content>

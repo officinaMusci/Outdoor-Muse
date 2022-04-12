@@ -1,0 +1,26 @@
+<div class="progress">
+    <div
+        [ngStyle]="{'width': outwardTravelDuration|duration:'percentage':totalTripDuration}"
+        class="progress-bar bg-secondary progress-bar-animated"
+    ></div>
+    <div
+        [ngStyle]="{'width': outwardWalkDuration|duration:'percentage':totalTripDuration}"
+        class="progress-bar bg-primary progress-bar-animated"
+    ></div>
+    <div
+        [ngStyle]="{'width': destinationDuration|duration:'percentage':totalTripDuration}"
+        class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+    ></div>
+    <div
+        [ngStyle]="{'width': freeTimeDuration|duration:'percentage':totalTripDuration}"
+        class="progress-bar bg-warning progress-bar-animated"
+    ></div>
+    <div
+        [ngStyle]="{'width': returnWalkDuration|duration:'percentage':totalTripDuration}"
+        class="progress-bar bg-primary progress-bar-animated"
+    ></div>
+    <div
+        [ngStyle]="{'width': returnTravelDuration|duration:'percentage':totalTripDuration}"
+        class="progress-bar bg-secondary progress-bar-animated"
+    ></div>
+</div>

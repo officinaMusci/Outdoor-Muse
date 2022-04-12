@@ -1,0 +1,114 @@
+<app-header
+    title="Détail"
+    [hasBackButton]="true"
+    defaultHref="search"
+></app-header>
+
+<ion-content *ngIf="solution$|async as solution">
+    <ion-card>
+        <ion-card-header>
+            <ion-card-subtitle>Destination</ion-card-subtitle>
+            <ion-card-title>{{solution.place?.name}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content class="ion-no-padding">
+            <app-solution-resume
+                [solution]="solution"
+            ></app-solution-resume>
+        </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+        <ion-card-header>
+            <ion-card-title>Détails</ion-card-title>
+        </ion-card-header>
+
+        <ion-accordion-group (ionChange)="setAccordionGroupValue($event)">
+            <ion-accordion value="forecast">
+                <ion-item slot="header">
+                    <ion-label>Météo</ion-label>
+                </ion-item>
+                <app-forecast-list
+                    slot="content"
+                    [forecasts]="solution.forecasts"
+                ></app-forecast-list>
+            </ion-accordion>
+
+            <ion-accordion value="outwardItinerary">
+                <ion-item slot="header">
+                    <ion-label>Itinéraire aller</ion-label>
+                </ion-item>
+                <app-map
+                    *ngIf="accordionGroupValues.includes('outwardItinerary')"
+                    slot="content"
+                    [center]="solution.place?.location"
+                    [itinerary]="solution.outward_itinerary"
+                ></app-map>
+            </ion-accordion>
+
+            <ion-accordion value="returnItinerary">
+                <ion-item slot="header">
+                    <ion-label>Itinéraire retour</ion-label>
+                </ion-item>
+                <app-map
+                    *ngIf="accordionGroupValues.includes('returnItinerary')"
+                    slot="content"
+                    [center]="solution.place?.location"
+                    [itinerary]="solution.return_itinerary"
+                ></app-map>
+            </ion-accordion>
+
+            <ion-accordion
+                [disabled]="!partners.length"
+                value="partners"
+            >
+                <ion-item slot="header">
+                    <ion-label>Partenaires</ion-label>
+                </ion-item>
+                <app-partner-list
+                    slot="content"
+                    [partners]="partners"
+                ></app-partner-list>
+            </ion-accordion>
+
+            <ion-accordion
+                [disabled]="!reviews.length"
+                value="reviews"
+            >
+                <ion-item slot="header">
+                    <ion-label>Avis ({{reviews.length}})</ion-label>
+                    <p slot="end">
+                        <ion-icon
+                            *ngFor="let star of solution.place?.average_rating|counter"
+                            color="warning"
+                            name="star"
+                        ></ion-icon>
+                    </p>
+                </ion-item>
+                <app-review-list
+                    slot="content"
+                    [reviews]="reviews"
+                ></app-review-list>
+            </ion-accordion>
+        </ion-accordion-group>
+    </ion-card>
+
+
+    <ion-button
+        *ngIf="isLoggedIn && !solution.user_id"
+        expand="full"
+        (click)="selectSolution(solution.id)"
+    >
+        J'y vais !
+        <ion-icon name="walk"></ion-icon>
+    </ion-button>
+
+    <ion-button
+        *ngIf="isLoggedIn && solution.user_id"
+        color="warning"
+        expand="full"
+        (click)="unselectSolution(solution.id)"
+    >
+        Je n'y vais plus !
+        <ion-icon name="close"></ion-icon>
+    </ion-button>
+</ion-content>

@@ -78,6 +78,8 @@ class Solution:
     place_id:int=None
     user_id:int=None
 
+    place:Place=None
+
     id:int=None
     created:datetime=None
     updated:datetime=None

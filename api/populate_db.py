@@ -7,10 +7,8 @@ from entities.place import Place
 from entities.partner import Partner
 from entities.query import Query
 from entities.review import Review
-from entities.solution import SolutionRow
 
 from utils import time
-from services import database
 
 
 # Entity generator
@@ -61,7 +59,7 @@ admin = User(
 admin.save()
 
 # Generate users
-for x in range(randrange(100, 150)):
+for x in range(randrange(200, 500)):
     generate_in_the_past(User).save()
 
 # Generate partners
@@ -80,16 +78,16 @@ partners = Partner.get_all()
 
 # Generate user queries
 for user in users:
-    for x in range(randrange(10)):
+    for x in range(randrange(50)):
         generate_query(user).save()
 
 # Generate anonymous queries
-for x in range(randrange(100, 500)):
+for x in range(randrange(300, 700)):
     generate_query().save()
 
 # Generate place reviews
 for user in users:
-    for x in range(randrange(5)):
+    for x in range(randrange(15)):
         review = generate_in_the_past(Review)
         review.user_id = user.id
         review.place_id = random.choice(places).id

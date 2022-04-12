@@ -19,7 +19,8 @@ class Itinerary:
         end_location: The location where the itinerary ends.
         interval: The interval in which the itinerary should be performed.
         distance: The distance covered by the itinerary in meters.
-        steps: The steps that make up the itinerary.
+        steps: The steps that make up the itinerary (main route).
+        routes: The posssible routes.
         walk_duration: The walk duration of the itinerary.
         travel_duration: The travel duration of the itinerary.
     '''
@@ -27,7 +28,17 @@ class Itinerary:
     end_location:Location
     interval:Interval
     distance:int
-    steps:list
+    
+    bounds:any
+    copyrights:any
+    fare:any
+    legs:any
+    overview_path:any
+    overview_polyline:any
+    summary:any
+    warnings:any
+    waypoint_order:any
+
     walk_duration:timedelta=None
     travel_duration:timedelta=None
 
@@ -36,7 +47,7 @@ class Itinerary:
         walk_seconds = 0
         travel_seconds = 0
 
-        for step in self.steps:
+        for step in self.legs[0]['steps']:
             if step['travel_mode'] == 'WALKING':
                 walk_seconds += step['duration']['value']
             else:
@@ -61,13 +72,28 @@ class Itinerary:
         ARGS:
             dictionary: The dictionary received from the Google API client.
         '''
+        main_leg = dictionary['legs'][0]
+
         return Itinerary(
-            start_location=Location.from_dict(dictionary['start_location']),
-            end_location=Location.from_dict(dictionary['end_location']),
+            start_location=Location.from_dict(main_leg['start_location']),
+            end_location=Location.from_dict(main_leg['end_location']),
             interval=Interval.from_dict({
-                'start': dictionary['departure_time']['value'],
-                'end': dictionary['arrival_time']['value']
+                'start': main_leg['departure_time']['value'],
+                'end': main_leg['arrival_time']['value']
             }),
-            distance=dictionary['distance']['value'],
-            steps=dictionary['steps']
+            distance=main_leg['distance']['value'],
+            bounds=dictionary['bounds'],
+            copyrights=dictionary['copyrights'],
+            fare=dictionary['fare'] if 'fare' in dictionary else None,
+            legs=[main_leg],
+            overview_path=dictionary['overview_path']
+                if 'overview_path' in dictionary else None,
+            overview_polyline=dictionary['overview_polyline']
+                if 'overview_polyline' in dictionary else None,
+            summary=dictionary['summary']
+                if 'summary' in dictionary else None,
+            warnings=dictionary['warnings']
+                if 'warnings' in dictionary else None,
+            waypoint_order=dictionary['waypoint_order']
+                if 'waypoint_order' in dictionary else None
         )

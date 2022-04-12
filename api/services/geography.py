@@ -149,30 +149,33 @@ def fetch_itinerary(
     )
 
     if len(response):
-        response = response[0]['legs'][0]
+        response = response[0]
+        main_leg = response['legs'][0]
 
         '''If the itinerary is just a walk, Google doesn't give nor the
            departure_time neither the arrival_time'''
         if (
-            'departure_time' not in response
-            or 'arrival_time' not in response
+            'departure_time' not in main_leg
+            or 'arrival_time' not in main_leg
         ):
-            duration = timedelta(seconds=response['duration']['value'])
+            duration = timedelta(seconds=main_leg['duration']['value'])
             
             if departure_time:
-                response['departure_time'] = departure_time
-                response['arrival_time'] = departure_time + duration
+                main_leg['departure_time'] = departure_time
+                main_leg['arrival_time'] = departure_time + duration
             
             elif arrival_time:
-                response['departure_time'] = arrival_time - duration
-                response['arrival_time'] = arrival_time
+                main_leg['departure_time'] = arrival_time - duration
+                main_leg['arrival_time'] = arrival_time
             
-            response['departure_time'] = {
-                'value': response['departure_time'].timestamp()
+            main_leg['departure_time'] = {
+                'value': main_leg['departure_time'].timestamp()
             }
-            response['arrival_time'] = {
-                'value': response['arrival_time'].timestamp()
+            main_leg['arrival_time'] = {
+                'value': main_leg['arrival_time'].timestamp()
             }
+
+            response['legs'][0] = main_leg
 
         return Itinerary.from_dict(response)
 

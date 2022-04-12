@@ -1,20 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { SolutionInterface } from 'src/app/app.interfaces';
 import { SearchService } from '../../services/search/search.service';
 
 @Component({
   selector: 'app-search-results',
   templateUrl: './search-results.component.html',
-  styleUrls: ['./search-results.component.scss']
+  styleUrls: ['./search-results.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SearchResultsComponent implements OnInit {
-  public readonly solutions: SolutionInterface[] = this._searchService.solutions;
+export class SearchResultsComponent {
+  @Input() public solutions: SolutionInterface[] = [];
+
+  public length: number = 15;
 
   constructor(
-    private readonly _searchService: SearchService
+    private readonly _searchService: SearchService,
+    private readonly _cdr: ChangeDetectorRef
   ) { }
 
-  ngOnInit(): void {
-  }
+  loadData(event: any) {
+    setTimeout(() => {
+      event.target.complete();
+      this.length += 5;
 
+      if (this.length >= this.solutions.length) {
+        event.target.disabled = true;
+      }
+
+      this._cdr.detectChanges();
+    }, 500);
+  }
 }

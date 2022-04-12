@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PlacesPageComponent } from './places-page.component';
+import { SolutionResumeComponent } from './solution-resume.component';
 
-describe('PlacesPageComponent', () => {
-  let component: PlacesPageComponent;
-  let fixture: ComponentFixture<PlacesPageComponent>;
+describe('SolutionResumeComponent', () => {
+  let component: SolutionResumeComponent;
+  let fixture: ComponentFixture<SolutionResumeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PlacesPageComponent ]
+      declarations: [ SolutionResumeComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PlacesPageComponent);
+    fixture = TestBed.createComponent(SolutionResumeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

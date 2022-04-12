@@ -2,6 +2,7 @@ import flask
 
 from utils import app
 from entities.solution import Solution
+from entities.place import Place
 
 
 blueprint = flask.Blueprint(
@@ -37,7 +38,7 @@ def get():
 
 
 @blueprint.route('/<solution_id>', methods=['GET', 'DELETE', 'PUT'])
-@app.jwt_required(roles=['admin'])
+@app.jwt_required()
 def get_one(solution_id):
     '''The API route to get, delete or update a solution.
     
@@ -52,6 +53,7 @@ def get_one(solution_id):
     solution = Solution.get_from_id(solution_id)
 
     if flask.request.method == 'GET':
+        solution.place = Place.get_from_id(solution.place_id)
         return app.response(solution)
     
     elif flask.request.method == 'DELETE':

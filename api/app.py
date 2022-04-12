@@ -13,6 +13,7 @@ from routes import (
     partners,
     queries,
     reviews,
+    solutions,
     search,
     statistics
 )
@@ -53,6 +54,7 @@ def create_app():
     app.register_blueprint(partners.blueprint)
     app.register_blueprint(queries.blueprint)
     app.register_blueprint(reviews.blueprint)
+    app.register_blueprint(solutions.blueprint)
     app.register_blueprint(search.blueprint)
     app.register_blueprint(statistics.blueprint)
 

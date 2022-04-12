@@ -1,6 +1,7 @@
 import flask
 
 from utils import app
+from entities.solution import Solution
 from entities.partner import Partner
 
 
@@ -34,6 +35,20 @@ def get():
         partner = Partner.from_dict(request)
         partner.save()
         return app.response(partner)
+
+
+@blueprint.route('/solution/<solution_id>', methods=['GET'])
+def get_for_solution(solution_id):
+    '''The API route to get partners for a solution
+    
+    RETURNS:
+        response: The JSON response containing the partners.
+    '''
+    partners = []
+    for partner_id in Solution.get_from_id(solution_id).get_partner_ids():
+        partners.append(Partner.get_from_id(partner_id))
+        
+    return app.response(partners)
 
 
 @blueprint.route('/<partner_id>', methods=['GET', 'DELETE', 'PUT'])
