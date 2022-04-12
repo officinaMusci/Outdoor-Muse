@@ -216,7 +216,7 @@ export class SearchFormComponent implements OnInit {
       if (response.result) {
         const toast = await this._toastController.create({
           message: 'Le formulaire de recherche a été enregistré',
-          color: 'warning',
+          color: 'success',
           duration: 2000
         });
         toast.present();
